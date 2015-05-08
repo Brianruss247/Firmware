@@ -90,6 +90,7 @@ MODULES		+= modules/fw_att_control
 MODULES		+= modules/mc_att_control
 MODULES		+= modules/mc_pos_control
 MODULES 	+= modules/vtol_att_control
+MODULES		+= modules/kabej_control
 
 #
 # Logging
