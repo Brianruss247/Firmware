@@ -58,28 +58,17 @@ MODULES		+= systemcmds/ver
 # General system control
 #
 MODULES		+= modules/commander
-MODULES		+= modules/navigator
 MODULES		+= modules/mavlink
 MODULES		+= modules/gpio_led
-MODULES 	+= modules/land_detector
 
 #
 # Estimation modules (EKF / other filters)
 #
 # Too high RAM usage due to static allocations
-# MODULES		+= modules/attitude_estimator_ekf
-MODULES		+= modules/ekf_att_pos_estimator
-# Since attitude_estimator_ekf is disabled, this app won't be
-# worthwhile on its own
-# MODULES		+= modules/position_estimator_inav
 
 #
 # Vehicle Control
 #
-MODULES		+= modules/fw_pos_control_l1
-MODULES		+= modules/fw_att_control
-MODULES		+= modules/mc_att_control
-MODULES		+= modules/mc_pos_control
 
 #
 # Logging

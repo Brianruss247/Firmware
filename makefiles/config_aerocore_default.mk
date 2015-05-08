@@ -44,24 +44,15 @@ MODULES		+= systemcmds/dumpfile
 # General system control
 #
 MODULES		+= modules/commander
-MODULES		+= modules/navigator
 MODULES		+= modules/mavlink
 
 #
 # Estimation modules (EKF/ SO3 / other filters)
 #
-MODULES		+= modules/attitude_estimator_ekf
-MODULES		+= modules/attitude_estimator_so3
-MODULES		+= modules/ekf_att_pos_estimator
-MODULES		+= modules/position_estimator_inav
 
 #
 # Vehicle Control
 #
-MODULES		+= modules/fw_pos_control_l1
-MODULES		+= modules/fw_att_control
-MODULES		+= modules/mc_att_control
-MODULES		+= modules/mc_pos_control
 
 #
 # Library modules
@@ -91,7 +82,7 @@ MODULES		+= lib/launchdetection
 #MODULES		+= examples/math_demo
 # Tutorial code from
 # https://pixhawk.ethz.ch/px4/dev/hello_sky
-MODULES		+= examples/px4_simple_app
+#MODULES		+= examples/px4_simple_app
 
 # Tutorial code from
 # https://pixhawk.ethz.ch/px4/dev/daemon

@@ -67,29 +67,17 @@ MODULES		+= systemcmds/ver
 # General system control
 #
 MODULES		+= modules/commander
-MODULES		+= modules/navigator
 MODULES		+= modules/mavlink
 MODULES		+= modules/gpio_led
 MODULES		+= modules/uavcan
-MODULES 	+= modules/land_detector
 
 #
 # Estimation modules (EKF/ SO3 / other filters)
 #
-MODULES		+= modules/attitude_estimator_ekf
-MODULES		+= modules/attitude_estimator_q
-MODULES		+= modules/ekf_att_pos_estimator
-MODULES		+= modules/position_estimator_inav
 
 #
 # Vehicle Control
 #
-#MODULES		+= modules/segway # XXX Needs GCC 4.7 fix
-MODULES		+= modules/fw_pos_control_l1
-MODULES		+= modules/fw_att_control
-MODULES		+= modules/mc_att_control
-MODULES		+= modules/mc_pos_control
-MODULES 	+= modules/vtol_att_control
 
 #
 # Logging
@@ -120,19 +108,14 @@ MODULES		+= lib/launchdetection
 MODULES		+= platforms/nuttx
 
 #
-# OBC challenge
-#
-MODULES		+= modules/bottle_drop
-
-#
 # PX4 flow estimator, good for indoors
 #
-MODULES		+= examples/flow_position_estimator
+#MODULES		+= examples/flow_position_estimator
 
 #
 # Rover apps
 #
-MODULES		+= examples/rover_steering_control
+#MODULES		+= examples/rover_steering_control
 
 #
 # Demo apps
