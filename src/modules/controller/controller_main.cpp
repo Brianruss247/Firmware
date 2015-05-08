@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <errno.h>
  
-__EXPORT int kabej_control_main(int argc, char *argv[]);
+extern "C" __EXPORT int controller_main(int argc, char *argv[]);
  
-int kabej_control_main(int argc, char *argv[])
+int controller_main(int argc, char *argv[])
 {
 	printf("Hello Sky!\n");
 	return OK;
