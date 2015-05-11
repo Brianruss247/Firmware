@@ -66,6 +66,19 @@ protected:
         float delta_t;
     };
 
+    struct params_s {
+        math::Vector<3> att_p;  /**< P gain for angular error */
+        math::Vector<3> rate_p; /**< P gain for angular rate error */
+        math::Vector<3> rate_i; /**< I gain for angular rate error */
+        math::Vector<3> rate_d; /**< D gain for angular rate error */
+        float yaw_ff;           /**< yaw control feed-forward */
+        float yaw_rate_max;     /**< max yaw rate */
+        math::Vector<4> trims;  /**< e,a,r,t */
+        float alt_toz;          /**< altitude takeoff zone */
+        float alt_hz;          /**< altitude hold zone */
+        math::Vector<4> max;    /**< e,a,r,t */
+    };
+
     virtual void control(const struct params_s &params, const struct input_s &input, struct output_s &output) = 0;
 
 private:
@@ -102,19 +115,6 @@ private:
         param_t max_r;
         param_t max_t;
     } _params_handles; /**< handles for interesting parameters */
-
-    struct params_s {
-        math::Vector<3> att_p;  /**< P gain for angular error */
-        math::Vector<3> rate_p; /**< P gain for angular rate error */
-        math::Vector<3> rate_i; /**< I gain for angular rate error */
-        math::Vector<3> rate_d; /**< D gain for angular rate error */
-        float yaw_ff;           /**< yaw control feed-forward */
-        float yaw_rate_max;     /**< max yaw rate */
-        math::Vector<4> trims;  /**< e,a,r,t */
-        float alt_toz;          /**< altitude takeoff zone */
-        float alt_hz;          /**< altitude hold zone */
-        math::Vector<4> max;    /**< e,a,r,t */
-    };
 
     struct vehicle_state_s             _vehicle_state;     /**< vehicle state */
     struct manual_control_setpoint_s   _manual_control_sp; /**< manual control setpoint */
