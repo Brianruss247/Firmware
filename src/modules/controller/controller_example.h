@@ -8,7 +8,7 @@ class controller_example: public controller_base
 public:
     controller_example();
 private:
-    void virtual control();
+    virtual void control(const struct params_s &params, const input_s &input, output_s &output);
 };
 
 #endif // CONTROLLER_EXAMPLE_H
