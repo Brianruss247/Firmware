@@ -100,6 +100,7 @@
 #include <uORB/topics/vtol_vehicle_status.h>
 #include <uORB/topics/time_offset.h>
 #include <uORB/topics/mc_att_ctrl_status.h>
+#include <uORB/topics/vehicle_state.h>
 
 #include <systemlib/systemlib.h>
 #include <systemlib/param/param.h>
@@ -1036,6 +1037,7 @@ int sdlog2_thread_main(int argc, char *argv[])
 		struct vtol_vehicle_status_s vtol_status;
 		struct time_offset_s time_offset;
 		struct mc_att_ctrl_status_s mc_att_ctrl_status;
+        struct vehicle_state_s state;
 	} buf;
 
 	memset(&buf, 0, sizeof(buf));
@@ -1046,6 +1048,7 @@ int sdlog2_thread_main(int argc, char *argv[])
 		LOG_PACKET_HEADER;
 		union {
 			struct log_TIME_s log_TIME;
+            struct log_XHAT_s log_XHAT;
 			struct log_ATT_s log_ATT;
 			struct log_ATSP_s log_ATSP;
 			struct log_IMU_s log_IMU;
@@ -1124,6 +1127,7 @@ int sdlog2_thread_main(int argc, char *argv[])
 		int encoders_sub;
 		int tsync_sub;
 		int mc_att_ctrl_status_sub;
+        int state_sub;
 	} subs;
 
 	subs.cmd_sub = -1;
@@ -1158,6 +1162,7 @@ int sdlog2_thread_main(int argc, char *argv[])
 	subs.tsync_sub = -1;
 	subs.mc_att_ctrl_status_sub = -1;
 	subs.encoders_sub = -1;
+    subs.state_sub = -1;
 
 	/* add new topics HERE */
 
@@ -1476,6 +1481,25 @@ int sdlog2_thread_main(int argc, char *argv[])
 			}
 
 		}
+
+        /* --- VEHICLE STATE --- */
+        if (copy_if_updated(ORB_ID(vehicle_state), &subs.state_sub, &buf.state)) {
+            log_msg.msg_type = LOG_STAT_MSG;
+            log_msg.body.log_XHAT.pos_n = buf.state.position[0];
+            log_msg.body.log_XHAT.pos_e = buf.state.position[1];
+            log_msg.body.log_XHAT.pos_h = buf.state.position[2];
+            log_msg.body.log_XHAT.v_a = buf.state.Va;
+            log_msg.body.log_XHAT.alpha = buf.state.alpha;
+            log_msg.body.log_XHAT.beta = buf.state.beta;
+            log_msg.body.log_XHAT.phi = buf.state.phi;
+            log_msg.body.log_XHAT.theta = buf.state.theta;
+            log_msg.body.log_XHAT.chi = buf.state.chi;
+            log_msg.body.log_XHAT.p = buf.state.p;
+            log_msg.body.log_XHAT.q = buf.state.q;
+            log_msg.body.log_XHAT.r = buf.state.r;
+            log_msg.body.log_XHAT.v_g = buf.state.Vg;
+            LOGBUFFER_WRITE_AND_COUNT(XHAT);
+        }
 
 		/* --- ATTITUDE --- */
 		if (copy_if_updated(ORB_ID(vehicle_attitude), &subs.att_sub, &buf.att)) {
