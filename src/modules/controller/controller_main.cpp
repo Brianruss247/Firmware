@@ -76,7 +76,7 @@ static void usage(const char *reason)
         fprintf(stderr, "%s\n", reason);
     }
 
-    fprintf(stderr, "usage: PF_estimator {start|stop|status} [-p <additional params>]\n\n");
+    fprintf(stderr, "usage: controller {start|stop|status} [-p <additional params>]\n\n");
     exit(1);
 }
 
@@ -135,7 +135,6 @@ int controller_main(int argc, char *argv[])
     usage("unrecognized command");
     exit(1);
 
-	printf("Hello Sky!\n");
 	return OK;
 }
 

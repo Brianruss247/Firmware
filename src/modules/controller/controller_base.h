@@ -85,6 +85,8 @@ private:
     int _params_sub;            /**< parameter updates subscription */
     int _vehicle_state_sub;     /**< vehicle state subscription */
     int _manual_control_sp_sub; /**< manual control setpoint subscription */
+    struct pollfd fds[1];
+    int poll_error_counter;
 
     orb_advert_t _actuators_0_pub; /**< attitude actuator controls publication */
 

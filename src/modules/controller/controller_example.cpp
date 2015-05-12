@@ -7,7 +7,7 @@ controller_example::controller_example()
 void controller_example::control(const params_s &params, const input_s &input, output_s &output)
 {
     output.delta_a = 0;
-    output.delta_e = 0;
+    output.delta_e = 0.5;
     output.delta_r = 0;
-    output.delta_t = 1;
+    output.delta_t = 0.75;
 }

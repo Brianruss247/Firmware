@@ -5,6 +5,9 @@ controller_base::controller_base()
     _params_sub = orb_subscribe(ORB_ID(parameter_update));
     _vehicle_state_sub = orb_subscribe(ORB_ID(vehicle_state));
     _manual_control_sp_sub = orb_subscribe(ORB_ID(manual_control_setpoint));
+    fds[0].fd = _vehicle_state_sub;
+    fds[0].events = POLLIN;
+    poll_error_counter = 0;
 
     memset(&_vehicle_state, 0, sizeof(_vehicle_state));
     memset(&_manual_control_sp, 0, sizeof(_manual_control_sp));
@@ -41,27 +44,41 @@ controller_base::controller_base()
 
 void controller_base::spin()
 {
-    parameter_update_poll();
-    vehicle_state_poll();
-    manual_control_poll();
+    /* wait for state update of 2 file descriptor for 20 ms */
+    int poll_ret = poll(fds, 1, 20);
 
-    struct input_s input;
-    input.h = _vehicle_state.position[2];
-    input.v_a = _vehicle_state.Va;
-    input.phi = _vehicle_state.phi;
-    input.theta = _vehicle_state.theta;
-    input.chi = _vehicle_state.chi;
-    input.p = _vehicle_state.p;
-    input.q = _vehicle_state.q;
-    input.r = _vehicle_state.r;
+    if (poll_ret < 0) {
+        /* this is seriously bad - should be an emergency */
+        if (poll_error_counter < 10 || poll_error_counter % 50 == 0) {
+            /* use a counter to prevent flooding (and slowing us down) */
+            printf("[controller] ERROR return value from poll(): %d\n", poll_ret);
+        }
 
-    struct output_s output;
+        poll_error_counter++;
+    } else {
 
-    control(_params, input, output);
+        parameter_update_poll();
+        vehicle_state_poll();
+        manual_control_poll();
 
-    pilot_override(output);
+        struct input_s input;
+        input.h = _vehicle_state.position[2];
+        input.v_a = _vehicle_state.Va;
+        input.phi = _vehicle_state.phi;
+        input.theta = _vehicle_state.theta;
+        input.chi = _vehicle_state.chi;
+        input.p = _vehicle_state.p;
+        input.q = _vehicle_state.q;
+        input.r = _vehicle_state.r;
 
-    actuator_controls_publish(output);
+        struct output_s output;
+
+        control(_params, input, output);
+
+        pilot_override(output);
+
+        actuator_controls_publish(output);
+    }
 }
 
 int controller_base::parameters_update()
