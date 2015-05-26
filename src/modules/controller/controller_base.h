@@ -44,7 +44,7 @@ class controller_base
 {
 public:
     controller_base();
-    void spin();
+    float spin();
 
 protected:
 

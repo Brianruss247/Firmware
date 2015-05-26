@@ -148,6 +148,8 @@ int controller_thread_main(int argc, char *argv[])
     while(!thread_should_exit)
     {
         cont->spin();
+//        float r = cont->spin();
+//        printf("%d \n", (int)(100*r));
     }
 
     warnx("[daemon] exiting.\n");

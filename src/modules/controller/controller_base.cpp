@@ -42,7 +42,7 @@ controller_base::controller_base()
     parameters_update();
 }
 
-void controller_base::spin()
+float controller_base::spin()
 {
     /* wait for state update of 2 file descriptor for 20 ms */
     int poll_ret = poll(fds, 1, 20);
@@ -55,6 +55,7 @@ void controller_base::spin()
         }
 
         poll_error_counter++;
+        return -1;
     } else {
 
         parameter_update_poll();
@@ -78,6 +79,7 @@ void controller_base::spin()
         pilot_override(output);
 
         actuator_controls_publish(output);
+        return input.q;
     }
 }
 
@@ -209,6 +211,7 @@ void controller_base::actuator_controls_publish(output_s &output)
     _actuators.control[2] = (isfinite(output.delta_r)) ? output.delta_r : 0.0f;
     _actuators.control[3] = (isfinite(output.delta_t)) ? output.delta_t : 0.0f;
     _actuators.timestamp = hrt_absolute_time();
+    //printf("%d \n", (int)(100*_actuators.control[3]));
 
     if (_actuators_0_pub > 0) {
         orb_publish(ORB_ID(actuator_controls_0), _actuators_0_pub, &_actuators);
