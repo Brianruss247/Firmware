@@ -49,34 +49,69 @@ public:
 protected:
 
     struct input_s{
-        float h;
-        float v_a;
-        float phi;
-        float theta;
-        float chi;
-        float p;
-        float q;
-        float r;
+        float Ts;               /** time step */
+        float h;                /** altitude */
+        float va;               /** airspeed */
+        float phi;              /** roll angle */
+        float theta;            /** pitch angle */
+        float chi;              /** course angle */
+        float p;                /** body frame roll rate */
+        float q;                /** body frame pitch rate */
+        float r;                /** body frame yaw rate */
+        float Va_c;             /** commanded airspeed (m/s) */
+        float h_c;              /** commanded altitude (m) */
+        float chi_c;            /** commanded course (rad) */
     };
 
     struct output_s{
+        float theta_c;
         float delta_e;
+        float phi_c;
         float delta_a;
         float delta_r;
         float delta_t;
     };
 
     struct params_s {
-        math::Vector<3> att_p;  /**< P gain for angular error */
-        math::Vector<3> rate_p; /**< P gain for angular rate error */
-        math::Vector<3> rate_i; /**< I gain for angular rate error */
-        math::Vector<3> rate_d; /**< D gain for angular rate error */
-        float yaw_ff;           /**< yaw control feed-forward */
-        float yaw_rate_max;     /**< max yaw rate */
-        math::Vector<4> trims;  /**< e,a,r,t */
+        float alt_hz;           /**< altitude hold zone */
         float alt_toz;          /**< altitude takeoff zone */
-        float alt_hz;          /**< altitude hold zone */
-        math::Vector<4> max;    /**< e,a,r,t */
+        float tau;
+        float c_kp;
+        float c_kd;
+        float c_ki;
+        float r_kp;
+        float r_kd;
+        float r_ki;
+        float p_kp;
+        float p_kd;
+        float p_ki;
+        float p_ff;
+        float a_p_kp;
+        float a_p_kd;
+        float a_p_ki;
+        float a_t_kp;
+        float a_t_kd;
+        float a_t_ki;
+        float a_kp;
+        float a_kd;
+        float a_ki;
+        float b_kp;
+        float b_kd;
+        float b_ki;
+        float max_e;
+        float max_a;
+        float max_r;
+        float max_t;
+    };
+
+    struct params_extra_s {
+        float trim_e;
+        float trim_a;
+        float trim_r;
+        float trim_t;
+        float pwm_rad_e;
+        float pwm_rad_a;
+        float pwm_rad_r;
     };
 
     virtual void control(const struct params_s &params, const struct input_s &input, struct output_s &output) = 0;
@@ -91,27 +126,38 @@ private:
     orb_advert_t _actuators_0_pub; /**< attitude actuator controls publication */
 
     struct {
-        param_t roll_p;
-        param_t roll_rate_p;
-        param_t roll_rate_i;
-        param_t roll_rate_d;
-        param_t pitch_p;
-        param_t pitch_rate_p;
-        param_t pitch_rate_i;
-        param_t pitch_rate_d;
-        param_t yaw_p;
-        param_t yaw_rate_p;
-        param_t yaw_rate_i;
-        param_t yaw_rate_d;
-        param_t yaw_ff;
-        param_t yaw_rate_max;
-
         param_t trim_e;
         param_t trim_a;
         param_t trim_r;
         param_t trim_t;
+        param_t pwm_rad_e;
+        param_t pwm_rad_a;
+        param_t pwm_rad_r;
         param_t alt_toz;
         param_t alt_hz;
+        param_t tau;
+        param_t course_kp;
+        param_t course_kd;
+        param_t course_ki;
+        param_t roll_kp;
+        param_t roll_kd;
+        param_t roll_ki;
+        param_t pitch_kp;
+        param_t pitch_kd;
+        param_t pitch_ki;
+        param_t pitch_ff;
+        param_t airspeed_pitch_kp;
+        param_t airspeed_pitch_kd;
+        param_t airspeed_pitch_ki;
+        param_t airspeed_throttle_kp;
+        param_t airspeed_throttle_kd;
+        param_t airspeed_throttle_ki;
+        param_t altitude_kp;
+        param_t altitude_kd;
+        param_t altitude_ki;
+        param_t beta_kp;
+        param_t beta_kd;
+        param_t beta_ki;
         param_t max_e;
         param_t max_a;
         param_t max_r;
@@ -122,6 +168,7 @@ private:
     struct manual_control_setpoint_s   _manual_control_sp; /**< manual control setpoint */
     struct actuator_controls_s         _actuators;         /**< actuator controls */
     struct params_s                    _params;            /**< params */
+    struct params_extra_s              _params_extra;      /**< params extra */
 
     /**
     * Update our local parameter cache.
@@ -142,6 +189,11 @@ private:
     * Check for changes in manual inputs.
     */
     void manual_control_poll();
+
+    /**
+    * Convert from deflection angle to pwm
+    */
+    void convert_to_pwm(struct output_s &output);
 
     /**
     * RC override

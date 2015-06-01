@@ -9,140 +9,6 @@
 #include <systemlib/param/param.h>
 
 /**
- * Roll P gain
- *
- * Roll proportional gain, i.e. desired angular speed in rad/s for error 1 rad.
- *
- * @min 0.0
- * @group UAVbook
- */
-PARAM_DEFINE_FLOAT(UAVBOOK_ROLL_P, 6.0f);
-
-/**
- * Roll rate P gain
- *
- * Roll rate proportional gain, i.e. control output for angular speed error 1 rad/s.
- *
- * @min 0.0
- * @group UAVbook
- */
-PARAM_DEFINE_FLOAT(UAVBOOK_ROLLRATE_P, 0.1f);
-
-/**
- * Roll rate I gain
- *
- * Roll rate integral gain. 
- *
- * @min 0.0
- * @group UAVbook
- */
-PARAM_DEFINE_FLOAT(UAVBOOK_ROLLRATE_I, 0.0f);
-
-/**
- * Roll rate D gain
- *
- * Roll rate differential gain. Small values help reduce fast oscillations. If value is too big oscillations will appear again.
- *
- * @min 0.0
- * @group UAVbook
- */
-PARAM_DEFINE_FLOAT(UAVBOOK_ROLLRATE_D, 0.002f);
-
-/**
- * Pitch P gain
- *
- * Pitch proportional gain, i.e. desired angular speed in rad/s for error 1 rad.
- *
- * @unit 1/s
- * @min 0.0
- * @group UAVbook
- */
-PARAM_DEFINE_FLOAT(UAVBOOK_PITCH_P, 6.0f);
-
-/**
- * Pitch rate P gain
- *
- * Pitch rate proportional gain, i.e. control output for angular speed error 1 rad/s.
- *
- * @min 0.0
- * @group UAVbook
- */
-PARAM_DEFINE_FLOAT(UAVBOOK_PITCHRATE_P, 0.1f);
-
-/**
- * Pitch rate I gain
- *
- * Pitch rate integral gain. Can be set to compensate static thrust difference or gravity center offset.
- *
- * @min 0.0
- * @group UAVbook
- */
-PARAM_DEFINE_FLOAT(UAVBOOK_PITCHRATE_I, 0.0f);
-
-/**
- * Pitch rate D gain
- *
- * Pitch rate differential gain. Small values help reduce fast oscillations. If value is too big oscillations will appear again.
- *
- * @min 0.0
- * @group UAVbook
- */
-PARAM_DEFINE_FLOAT(UAVBOOK_PITCHRATE_D, 0.002f);
-
-/**
- * Yaw P gain
- *
- * Yaw proportional gain, i.e. desired angular speed in rad/s for error 1 rad.
- *
- * @unit 1/s
- * @min 0.0
- * @group UAVbook
- */
-PARAM_DEFINE_FLOAT(UAVBOOK_YAW_P, 2.0f);
-
-/**
- * Yaw rate P gain
- *
- * Yaw rate proportional gain, i.e. control output for angular speed error 1 rad/s.
- *
- * @min 0.0
- * @group UAVbook
- */
-PARAM_DEFINE_FLOAT(UAVBOOK_YAWRATE_P, 0.3f);
-
-/**
- * Yaw rate I gain
- *
- * Yaw rate integral gain. Can be set to compensate static thrust difference or gravity center offset.
- *
- * @min 0.0
- * @group UAVbook
- */
-PARAM_DEFINE_FLOAT(UAVBOOK_YAWRATE_I, 0.0f);
-
-/**
- * Yaw rate D gain
- *
- * Yaw rate differential gain. Small values help reduce fast oscillations. If value is too big oscillations will appear again.
- *
- * @min 0.0
- * @group UAVbook
- */
-PARAM_DEFINE_FLOAT(UAVBOOK_YAWRATE_D, 0.0f);
-
-/**
- * Max yaw rate
- *
- * Limit for yaw rate, has effect for large rotations in autonomous mode, to avoid large control output and mixer saturation.
- *
- * @unit deg/s
- * @min 0.0
- * @max 360.0
- * @group UAVbook
- */
-PARAM_DEFINE_FLOAT(UAVBOOK_YAWRATE_MAX, 120.0f);
-
-/**
  * Trim value for elevator
  *
  * @unit 
@@ -183,13 +49,37 @@ PARAM_DEFINE_FLOAT(UAVBOOK_TRIM_R, 0.0f);
 PARAM_DEFINE_FLOAT(UAVBOOK_TRIM_T, 0.5f);
 
 /**
+ * Conversion from angle to servo command for elevator
+ *
+ * @unit PWM/radian
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_PWM_RAD_E, 1.0f);
+
+/**
+ * Conversion from angle to servo command for aileron
+ *
+ * @unit PWM/radian
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_PWM_RAD_A, 1.0f);
+
+/**
+ * Conversion from angle to servo command for rudder
+ *
+ * @unit PWM/radian
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_PWM_RAD_R, 1.0f);
+
+/**
  * Altitude take off zone
  *
  * @unit m
  * @min 0
  * @group UAVbook
  */
-PARAM_DEFINE_FLOAT(UAVBOOK_ALT_TOZ, 30.0f);
+PARAM_DEFINE_FLOAT(UAVBOOK_ALT_TOZ, 20.0f);
 
 /**
  * Altitude hold zone
@@ -198,39 +88,225 @@ PARAM_DEFINE_FLOAT(UAVBOOK_ALT_TOZ, 30.0f);
  * @min 0
  * @group UAVbook
  */
-PARAM_DEFINE_FLOAT(UAVBOOK_ALT_HZ, 90.0f);
+PARAM_DEFINE_FLOAT(UAVBOOK_ALT_HZ, 10.0f);
+
+/**
+ * tau for dirty derivative/low-pass fliter.
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_TAU, 5.0f);
+
+/**
+ * Course loop Propotional gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_COURSE_KP, 0.6504f);
+
+/**
+ * Course loop Derivative gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_COURSE_KD, 0.0f);
+
+/**
+ * Course loop Integral gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_COURSE_KI, 0.0984f);
+
+
+/**
+ * Roll loop Propotional gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_ROLL_KP, 1.0712f);
+
+/**
+ * Roll loop Derivative gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_ROLL_KD, 0.1086f);
+
+/**
+ * Roll loop Integral gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_ROLL_KI, 0.10f);
+
+
+/**
+ * Pitch loop Propotional gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_PITCH_KP, -1.0f);
+
+/**
+ * Pitch loop Derivative gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_PITCH_KD, -0.1168f);
+
+/**
+ * Pitch loop Integral gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_PITCH_KI, 0.0f);
+
+/**
+ * Pitch loop feed forward
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_PITCH_FF, 0.0f);
+
+/**
+ * Airspeed-Pitch loop Propotional gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_AIRSPEED_PITCH_KP, -0.0713f);
+
+/**
+ * Airspeed-Pitch loop Derivative gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_AIRSPEED_PITCH_KD, -0.0635f);
+
+/**
+ * Airspeed-Pitch loop Integral gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_AIRSPEED_PITCH_KI, 0.0f);
+
+/**
+ * Airspeed-Throttle loop Propotional gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_AIRSPEED_THROTTLE_KP, -0.0713f);
+
+/**
+ * Airspeed-Throttle loop Derivative gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_AIRSPEED_THROTTLE_KD, -0.0635f);
+
+/**
+ * Airspeed-Throttle loop Integral gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_AIRSPEED_THROTTLE_KI, 0.0f);
+
+/**
+ * Altitude loop Propotional gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_ALTITUDE_KP, 0.0546f);
+
+/**
+ * Altitude loop Derivative gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_ALTITUDE_KD, 0.0f);
+
+/**
+ * Altitude loop Integral gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_ALTITUDE_KI, 0.0120f);
+
+/**
+ * Beta loop Propotional gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_BETA_KP, -0.1164f);
+
+/**
+ * Beta loop Derivative gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_BETA_KD, 0.0f);
+
+/**
+ * Beta loop Integral gain
+ *
+ * @min 0.0
+ * @group UAVbook
+ */
+PARAM_DEFINE_FLOAT(UAVBOOK_BETA_KI, -3.7111f);
 
 /**
  * Max deflection elevator
  *
- * @unit 
+ * @unit rad
  * @max 1
  * @group UAVbook
  */
-PARAM_DEFINE_FLOAT(UAVBOOK_MAX_E, 1.0f);
+PARAM_DEFINE_FLOAT(UAVBOOK_MAX_E, 0.523f);
 
 /**
  * Max deflection aileron
  *
- * @unit 
+ * @unit rad
  * @max 1
  * @group UAVbook
  */
-PARAM_DEFINE_FLOAT(UAVBOOK_MAX_A, 1.0f);
+PARAM_DEFINE_FLOAT(UAVBOOK_MAX_A, 0.523f);
 
 /**
  * Max deflection rudder
  *
- * @unit 
+ * @unit rad
  * @max 1
  * @group UAVbook
  */
-PARAM_DEFINE_FLOAT(UAVBOOK_MAX_R, 1.0f);
+PARAM_DEFINE_FLOAT(UAVBOOK_MAX_R, 0.523f);
 
 /**
  * Max deflection throttle
  *
- * @unit 
+ * @unit
  * @max 1
  * @group UAVbook
  */

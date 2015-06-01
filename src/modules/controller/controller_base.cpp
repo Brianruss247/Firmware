@@ -14,26 +14,38 @@ controller_base::controller_base()
     memset(&_actuators, 0, sizeof(_actuators));
     memset(&_params, 0, sizeof(_params));
 
-//    _params_handles.roll_p         = param_find("UAVBOOK_ROLL_P");
-//    _params_handles.roll_rate_p    = param_find("PF_ROLLRATE_P");
-//    _params_handles.roll_rate_i    = param_find("PF_ROLLRATE_I");
-//    _params_handles.roll_rate_d    = param_find("PF_ROLLRATE_D");
-//    _params_handles.pitch_p        = param_find("PF_PITCH_P");
-//    _params_handles.pitch_rate_p   = param_find("PF_PITCHRATE_P");
-//    _params_handles.pitch_rate_i   = param_find("PF_PITCHRATE_I");
-//    _params_handles.pitch_rate_d   = param_find("PF_PITCHRATE_D");
-//    _params_handles.yaw_p          = param_find("PF_YAW_P");
-//    _params_handles.yaw_rate_p     = param_find("PF_YAWRATE_P");
-//    _params_handles.yaw_rate_i     = param_find("PF_YAWRATE_I");
-//    _params_handles.yaw_rate_d     = param_find("PF_YAWRATE_D");
-//    _params_handles.yaw_ff         = param_find("PF_YAW_FF");
-//    _params_handles.yaw_rate_max   = param_find("PF_YAWRATE_MAX");
     _params_handles.trim_e         = param_find("UAVBOOK_TRIM_E");
     _params_handles.trim_a         = param_find("UAVBOOK_TRIM_A");
     _params_handles.trim_r         = param_find("UAVBOOK_TRIM_R");
     _params_handles.trim_t         = param_find("UAVBOOK_TRIM_T");
+    _params_handles.pwm_rad_e      = param_find("UABBOOK_PWM_RAD_E");
+    _params_handles.pwm_rad_a      = param_find("UABBOOK_PWM_RAD_A");
+    _params_handles.pwm_rad_r      = param_find("UABBOOK_PWM_RAD_R");
     _params_handles.alt_toz        = param_find("UAVBOOK_ALT_TOZ");
     _params_handles.alt_hz         = param_find("UAVBOOK_ALT_HZ");
+    _params_handles.tau            = param_find("UAVBOOK_TAU");
+    _params_handles.course_kp      = param_find("UAVBOOK_COURSE_KP");
+    _params_handles.course_kd      = param_find("UAVBOOK_COURSE_KD");
+    _params_handles.course_ki      = param_find("UAVBOOK_COURSE_KI");
+    _params_handles.roll_kp        = param_find("UAVBOOK_ROLL_KP");
+    _params_handles.roll_kd        = param_find("UAVBOOK_ROLL_KD");
+    _params_handles.roll_ki        = param_find("UAVBOOK_ROLL_KI");
+    _params_handles.pitch_kp       = param_find("UAVBOOK_PITCH_KP");
+    _params_handles.pitch_kd       = param_find("UAVBOOK_PITCH_KD");
+    _params_handles.pitch_ki       = param_find("UAVBOOK_PITCH_KI");
+    _params_handles.pitch_ff       = param_find("UAVBOOK_PITCH_FF");
+    _params_handles.airspeed_pitch_kp       = param_find("UAVBOOK_AIRSPEED_PITCH_KP");
+    _params_handles.airspeed_pitch_kd       = param_find("UAVBOOK_AIRSPEED_PITCH_KD");
+    _params_handles.airspeed_pitch_ki       = param_find("UAVBOOK_AIRSPEED_PITCH_KI");
+    _params_handles.airspeed_throttle_kp    = param_find("UAVBOOK_AIRSPEED_THROTTLE_KP");
+    _params_handles.airspeed_throttle_kd    = param_find("UAVBOOK_AIRSPEED_THROTTLE_KD");
+    _params_handles.airspeed_throttle_ki    = param_find("UAVBOOK_AIRSPEED_THROTTLE_KI");
+    _params_handles.altitude_kp    = param_find("UAVBOOK_ALTITUDE_KP");
+    _params_handles.altitude_kd    = param_find("UAVBOOK_ALTITUDE_KD");
+    _params_handles.altitude_ki    = param_find("UAVBOOK_ALTITUDE_KI");
+    _params_handles.beta_kp        = param_find("UAVBOOK_BETA_KP");
+    _params_handles.beta_kd        = param_find("UAVBOOK_BETA_KD");
+    _params_handles.beta_ki        = param_find("UAVBOOK_BETA_KI");
     _params_handles.max_e          = param_find("UAVBOOK_MAX_E");
     _params_handles.max_a          = param_find("UAVBOOK_MAX_A");
     _params_handles.max_r          = param_find("UAVBOOK_MAX_R");
@@ -64,7 +76,7 @@ float controller_base::spin()
 
         struct input_s input;
         input.h = _vehicle_state.position[2];
-        input.v_a = _vehicle_state.Va;
+        input.va = _vehicle_state.Va;
         input.phi = _vehicle_state.phi;
         input.theta = _vehicle_state.theta;
         input.chi = _vehicle_state.chi;
@@ -76,6 +88,8 @@ float controller_base::spin()
 
         control(_params, input, output);
 
+        convert_to_pwm(output);
+
         pilot_override(output);
 
         actuator_controls_publish(output);
@@ -85,61 +99,52 @@ float controller_base::spin()
 
 int controller_base::parameters_update()
 {
-  float v;
+    param_get(_params_handles.trim_e, &_params_extra.trim_e);
+    param_get(_params_handles.trim_a, &_params_extra.trim_a);
+    param_get(_params_handles.trim_r, &_params_extra.trim_r);
+    param_get(_params_handles.trim_t, &_params_extra.trim_t);
 
-//  /* roll gains */
-//  param_get(_params_handles.roll_p, &v);
-//  _params.att_p(0) = v;
-//  param_get(_params_handles.roll_rate_p, &v);
-//  _params.rate_p(0) = v;
-//  param_get(_params_handles.roll_rate_i, &v);
-//  _params.rate_i(0) = v;
-//  param_get(_params_handles.roll_rate_d, &v);
-//  _params.rate_d(0) = v;
+    param_get(_params_handles.pwm_rad_e, &_params_extra.pwm_rad_e);
+    param_get(_params_handles.pwm_rad_a, &_params_extra.pwm_rad_a);
+    param_get(_params_handles.pwm_rad_r, &_params_extra.pwm_rad_r);
 
-//  /* pitch gains */
-//  param_get(_params_handles.pitch_p, &v);
-//  _params.att_p(1) = v;
-//  param_get(_params_handles.pitch_rate_p, &v);
-//  _params.rate_p(1) = v;
-//  param_get(_params_handles.pitch_rate_i, &v);
-//  _params.rate_i(1) = v;
-//  param_get(_params_handles.pitch_rate_d, &v);
-//  _params.rate_d(1) = v;
-
-//  /* yaw gains */
-//  param_get(_params_handles.yaw_p, &v);
-//  _params.att_p(2) = v;
-//  param_get(_params_handles.yaw_rate_p, &v);
-//  _params.rate_p(2) = v;
-//  param_get(_params_handles.yaw_rate_i, &v);
-//  _params.rate_i(2) = v;
-//  param_get(_params_handles.yaw_rate_d, &v);
-//  _params.rate_d(2) = v;
-
-//  param_get(_params_handles.yaw_ff, &_params.yaw_ff);
-//  param_get(_params_handles.yaw_rate_max, &_params.yaw_rate_max);
-//  _params.yaw_rate_max = math::radians(_params.yaw_rate_max);
-
-    param_get(_params_handles.trim_e, &v);
-    _params.trims(0) = v;
-    param_get(_params_handles.trim_a, &v);
-    _params.trims(1) = v;
-    param_get(_params_handles.trim_r, &v);
-    _params.trims(2) = v;
-    param_get(_params_handles.trim_t, &v);
-    _params.trims(3) = v;
     param_get(_params_handles.alt_toz, &_params.alt_toz);
     param_get(_params_handles.alt_hz, &_params.alt_hz);
-    param_get(_params_handles.max_e, &v);
-    _params.max(0) = v;
-    param_get(_params_handles.max_a, &v);
-    _params.max(1) = v;
-    param_get(_params_handles.max_r, &v);
-    _params.max(2) = v;
-    param_get(_params_handles.max_t, &v);
-    _params.max(3) = v;
+    param_get(_params_handles.tau, &_params.tau);
 
+    param_get(_params_handles.course_kp, &_params.c_kp);
+    param_get(_params_handles.course_kd, &_params.c_kd);
+    param_get(_params_handles.course_ki, &_params.c_ki);
+
+    param_get(_params_handles.roll_kp, &_params.r_kp);
+    param_get(_params_handles.roll_kd, &_params.r_kd);
+    param_get(_params_handles.roll_ki, &_params.r_ki);
+
+    param_get(_params_handles.pitch_kp, &_params.p_kp);
+    param_get(_params_handles.pitch_kd, &_params.p_kd);
+    param_get(_params_handles.pitch_ki, &_params.p_ki);
+    param_get(_params_handles.pitch_ff, &_params.p_ff);
+
+    param_get(_params_handles.airspeed_pitch_kp, &_params.a_p_kp);
+    param_get(_params_handles.airspeed_pitch_kd, &_params.a_p_kd);
+    param_get(_params_handles.airspeed_pitch_ki, &_params.a_p_ki);
+
+    param_get(_params_handles.airspeed_throttle_kp, &_params.a_t_kp);
+    param_get(_params_handles.airspeed_throttle_kd, &_params.a_t_kd);
+    param_get(_params_handles.airspeed_throttle_ki, &_params.a_t_ki);
+
+    param_get(_params_handles.altitude_kp, &_params.a_kp);
+    param_get(_params_handles.altitude_kd, &_params.a_kd);
+    param_get(_params_handles.altitude_ki, &_params.a_ki);
+
+    param_get(_params_handles.beta_kp, &_params.b_kp);
+    param_get(_params_handles.beta_kd, &_params.b_kd);
+    param_get(_params_handles.beta_ki, &_params.b_ki);
+
+    param_get(_params_handles.max_e, &_params.max_e);
+    param_get(_params_handles.max_a, &_params.max_a);
+    param_get(_params_handles.max_r, &_params.max_r);
+    param_get(_params_handles.max_t, &_params.max_t);
 
     return OK;
 }
@@ -148,7 +153,7 @@ void controller_base::parameter_update_poll()
 {
   bool updated;
 
-  /* Check HIL state if vehicle status has changed */
+  /* Check if param status has changed */
   orb_check(_params_sub, &updated);
 
   if (updated) {
@@ -182,6 +187,13 @@ void controller_base::manual_control_poll()
   }
 }
 
+void controller_base::convert_to_pwm(controller_base::output_s &output)
+{
+    output.delta_e = _params_extra.trim_e + output.delta_e*_params_extra.pwm_rad_e;
+    output.delta_a = _params_extra.trim_a + output.delta_a*_params_extra.pwm_rad_a;
+    output.delta_r = _params_extra.trim_r + output.delta_r*_params_extra.pwm_rad_r;
+}
+
 void controller_base::pilot_override(controller_base::output_s &output)
 {
     if (_manual_control_sp.y > MANUAL_THRESHOLD || _manual_control_sp.y < -MANUAL_THRESHOLD)
@@ -210,6 +222,10 @@ void controller_base::actuator_controls_publish(output_s &output)
     _actuators.control[1] = (isfinite(output.delta_e)) ? output.delta_e : 0.0f;
     _actuators.control[2] = (isfinite(output.delta_r)) ? output.delta_r : 0.0f;
     _actuators.control[3] = (isfinite(output.delta_t)) ? output.delta_t : 0.0f;
+    /* for HIL purposes output the intermetiate commands */
+    _actuators.control[4] = (isfinite(output.phi_c)) ? output.phi_c : 0.0f;
+    _actuators.control[5] = (isfinite(output.theta_c)) ? output.theta_c : 0.0f;
+
     _actuators.timestamp = hrt_absolute_time();
     //printf("%d \n", (int)(100*_actuators.control[3]));
 
