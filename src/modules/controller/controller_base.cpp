@@ -4,12 +4,14 @@ controller_base::controller_base()
 {
     _params_sub = orb_subscribe(ORB_ID(parameter_update));
     _vehicle_state_sub = orb_subscribe(ORB_ID(vehicle_state));
+    _controller_commands_sub = orb_subscribe(ORB_ID(controller_commands));
     _manual_control_sp_sub = orb_subscribe(ORB_ID(manual_control_setpoint));
     fds[0].fd = _vehicle_state_sub;
     fds[0].events = POLLIN;
     poll_error_counter = 0;
 
     memset(&_vehicle_state, 0, sizeof(_vehicle_state));
+    memset(&_controller_commands, 0, sizeof(_controller_commands));
     memset(&_manual_control_sp, 0, sizeof(_manual_control_sp));
     memset(&_actuators, 0, sizeof(_actuators));
     memset(&_params, 0, sizeof(_params));
@@ -72,6 +74,7 @@ float controller_base::spin()
 
         parameter_update_poll();
         vehicle_state_poll();
+        controller_commads_poll();
         manual_control_poll();
 
         struct input_s input;
@@ -83,6 +86,10 @@ float controller_base::spin()
         input.p = _vehicle_state.p;
         input.q = _vehicle_state.q;
         input.r = _vehicle_state.r;
+        input.Va_c = _controller_commands.Va_c;
+        input.h_c = _controller_commands.h_c;
+        input.chi_c = _controller_commands.chi_c;
+        input.Ts = 0.01f;  //todo: fix this to be the actual time step
 
         struct output_s output;
 
@@ -172,6 +179,18 @@ void controller_base::vehicle_state_poll()
 
     if (updated) {
         orb_copy(ORB_ID(vehicle_state), _vehicle_state_sub, &_vehicle_state);
+    }
+}
+
+void controller_base::controller_commads_poll()
+{
+    bool updated;
+
+    /* get the state */
+    orb_check(_controller_commands_sub, &updated);
+
+    if (updated) {
+        orb_copy(ORB_ID(controller_commands), _controller_commands_sub, &_controller_commands);
     }
 }
 

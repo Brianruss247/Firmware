@@ -28,6 +28,7 @@
 #include <uORB/uORB.h>
 #include <uORB/topics/parameter_update.h>
 #include <uORB/topics/vehicle_state.h>
+#include <uORB/topics/controller_commands.h>
 #include <uORB/topics/manual_control_setpoint.h>
 #include <uORB/topics/actuator_controls.h>
 
@@ -104,6 +105,7 @@ protected:
         float max_t;
     };
 
+    // extra params that don't go all the way to control(params, input, output)
     struct params_extra_s {
         float trim_e;
         float trim_a;
@@ -119,6 +121,7 @@ protected:
 private:
     int _params_sub;            /**< parameter updates subscription */
     int _vehicle_state_sub;     /**< vehicle state subscription */
+    int _controller_commands_sub;/**< controller commands subscription */
     int _manual_control_sp_sub; /**< manual control setpoint subscription */
     struct pollfd fds[1];
     int poll_error_counter;
@@ -165,6 +168,7 @@ private:
     } _params_handles; /**< handles for interesting parameters */
 
     struct vehicle_state_s             _vehicle_state;     /**< vehicle state */
+    struct controller_commands_s       _controller_commands;/**< controller commands */
     struct manual_control_setpoint_s   _manual_control_sp; /**< manual control setpoint */
     struct actuator_controls_s         _actuators;         /**< actuator controls */
     struct params_s                    _params;            /**< params */
@@ -184,6 +188,11 @@ private:
     * Check for changes in vehicle state.
     */
     void vehicle_state_poll();
+
+    /**
+    * Check for changes in controller commands.
+    */
+    void controller_commads_poll();
 
     /**
     * Check for changes in manual inputs.
