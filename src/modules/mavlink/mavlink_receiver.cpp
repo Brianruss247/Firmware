@@ -209,6 +209,7 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 		handle_message_timesync(msg);
 		break;
 
+    // todo: figure out how to enable hil in mavlink move the following down below
     case MAVLINK_MSG_ID_HIL_VEHICLE_STATE:
         handle_message_hil_vehicle_state(msg);
         break;
@@ -236,6 +237,10 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 		case MAVLINK_MSG_ID_HIL_STATE_QUATERNION:
 			handle_message_hil_state_quaternion(msg);
 			break;
+
+//        case MAVLINK_MSG_ID_HIL_VEHICLE_STATE:
+//            handle_message_hil_vehicle_state(msg);
+//            break;
 
 		case MAVLINK_MSG_ID_HIL_OPTICAL_FLOW:
 			handle_message_hil_optical_flow(msg);
@@ -1490,18 +1495,18 @@ void MavlinkReceiver::handle_message_hil_vehicle_state(mavlink_message_t *msg)
         _vehicle_state.position[i] = hil_vehicle_state.position[i];
     }
     _vehicle_state.Va = hil_vehicle_state.Va;
-    _vehicle_state.Va = hil_vehicle_state.alpha;
-    _vehicle_state.Va = hil_vehicle_state.beta;
-    _vehicle_state.Va = hil_vehicle_state.phi;
-    _vehicle_state.Va = hil_vehicle_state.theta;
-    _vehicle_state.Va = hil_vehicle_state.psi;
-    _vehicle_state.Va = hil_vehicle_state.chi;
-    _vehicle_state.Va = hil_vehicle_state.p;
-    _vehicle_state.Va = hil_vehicle_state.q;
-    _vehicle_state.Va = hil_vehicle_state.r;
-    _vehicle_state.Va = hil_vehicle_state.Vg;
-    _vehicle_state.Va = hil_vehicle_state.wn;
-    _vehicle_state.Va = hil_vehicle_state.we;
+    _vehicle_state.alpha = hil_vehicle_state.alpha;
+    _vehicle_state.beta = hil_vehicle_state.beta;
+    _vehicle_state.phi = hil_vehicle_state.phi;
+    _vehicle_state.theta = hil_vehicle_state.theta;
+    _vehicle_state.phi = hil_vehicle_state.psi;
+    _vehicle_state.chi = hil_vehicle_state.chi;
+    _vehicle_state.p = hil_vehicle_state.p;
+    _vehicle_state.q = hil_vehicle_state.q;
+    _vehicle_state.r = hil_vehicle_state.r;
+    _vehicle_state.Vg = hil_vehicle_state.Vg;
+    _vehicle_state.wn = hil_vehicle_state.wn;
+    _vehicle_state.we = hil_vehicle_state.we;
     for(int i=0;i<4;i++)
     {
         _vehicle_state.quat[i] = hil_vehicle_state.quat[i];
