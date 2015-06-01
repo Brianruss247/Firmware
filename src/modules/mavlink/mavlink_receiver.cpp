@@ -123,6 +123,7 @@ MavlinkReceiver::MavlinkReceiver(Mavlink *parent) :
 	_land_detector_pub(-1),
 	_time_offset_pub(-1),
     _vehicle_state_pub(-1),
+    _controller_commands_pub(-1),
     _control_mode_sub(orb_subscribe(ORB_ID(vehicle_control_mode))),
 	_hil_frames(0),
 	_old_timestamp(0),
@@ -213,6 +214,9 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
     case MAVLINK_MSG_ID_HIL_VEHICLE_STATE:
         handle_message_hil_vehicle_state(msg);
         break;
+
+    case MAVLINK_MSG_ID_HIL_CONTROLLER_COMMANDS:
+        handle_message_hil_controller_commands(msg);
 
 	default:
 		break;
@@ -1517,6 +1521,32 @@ void MavlinkReceiver::handle_message_hil_vehicle_state(mavlink_message_t *msg)
         _vehicle_state_pub = orb_advertise(ORB_ID(vehicle_state), &_vehicle_state);
     } else {
         orb_publish(ORB_ID(vehicle_state), _vehicle_state_pub, &_vehicle_state);
+    }
+}
+
+void MavlinkReceiver::handle_message_hil_controller_commands(mavlink_message_t *msg)
+{
+    /* vehicle_state */
+    mavlink_hil_controller_commands_t hil_controller_commands;
+    mavlink_msg_hil_controller_commands_decode(msg, &hil_controller_commands);
+
+    struct controller_commands_s _controller_commands;
+
+    _controller_commands.timestamp = hrt_absolute_time();
+
+    _controller_commands.Va_c = hil_controller_commands.Va_c;
+    _controller_commands.h_c = hil_controller_commands.h_c;
+    _controller_commands.chi_c = hil_controller_commands.chi_c;
+    for(int i=0;i<4;i++)
+    {
+        _controller_commands.aux[i] = hil_controller_commands.aux[i];
+    }
+    _controller_commands.aux_valid = hil_controller_commands.aux_valid;
+
+    if (_controller_commands_pub<= 0) {
+        _controller_commands_pub = orb_advertise(ORB_ID(controller_commands), &_controller_commands);
+    } else {
+        orb_publish(ORB_ID(controller_commands), _controller_commands_pub, &_controller_commands);
     }
 }
 
