@@ -74,6 +74,8 @@
 #include <uORB/topics/battery_status.h>
 #include <uORB/topics/vehicle_force_setpoint.h>
 #include <uORB/topics/time_offset.h>
+#include <uORB/topics/vehicle_state.h>
+#include <uORB/topics/controller_commands.h>
 
 #include "mavlink_ftp.h"
 
@@ -135,6 +137,8 @@ private:
 	void handle_message_hil_sensor(mavlink_message_t *msg);
 	void handle_message_hil_gps(mavlink_message_t *msg);
 	void handle_message_hil_state_quaternion(mavlink_message_t *msg);
+    void handle_message_hil_vehicle_state(mavlink_message_t *msg);
+    void handle_message_hil_controller_commands(mavlink_message_t *msg);
 
 	void *receive_thread(void *arg);
 
@@ -180,6 +184,8 @@ private:
 	orb_advert_t _manual_pub;
 	orb_advert_t _land_detector_pub;
 	orb_advert_t _time_offset_pub;
+    orb_advert_t _vehicle_state_pub;
+    orb_advert_t _controller_commands_pub;
 	int _control_mode_sub;
 	int _hil_frames;
 	uint64_t _old_timestamp;

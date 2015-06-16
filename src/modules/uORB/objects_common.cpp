@@ -256,3 +256,9 @@ ORB_DEFINE(time_offset, struct time_offset_s);
 
 #include "topics/mc_att_ctrl_status.h"
 ORB_DEFINE(mc_att_ctrl_status, struct mc_att_ctrl_status_s);
+
+#include "topics/vehicle_state.h"
+ORB_DEFINE(vehicle_state, struct vehicle_state_s);
+
+#include "topics/controller_commands.h"
+ORB_DEFINE(controller_commands, struct controller_commands_s);
