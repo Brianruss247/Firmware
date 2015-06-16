@@ -86,7 +86,10 @@ float controller_example::course_hold(float chi_c, float chi, float r, const par
 {
     float error = chi_c - chi;
 
-    c_integrator = c_integrator + (Ts/2)*(error + c_error);
+    if(fabs(error) > 15*3.14/180)
+        c_integrator = 0;
+    else
+        c_integrator = c_integrator + (Ts/2)*(error + c_error);
 
     float up = params.c_kp * error;
     float ui = params.c_ki * c_integrator;
