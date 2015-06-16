@@ -19,6 +19,8 @@ void controller_example::control(const params_s &params, const input_s &input, o
     output.phi_c = course_hold(input.chi_c, input.chi, input.r, params, input.Ts);
     output.delta_a = roll_hold(output.phi_c, input.phi, input.p, params, input.Ts);
 
+    //printf("%d %d ", (int)(state), (int)(input.h));
+
     switch(state) {
     case alt_state::TakeOffZone:
         output.delta_t = params.max_t;
@@ -76,8 +78,8 @@ void controller_example::control(const params_s &params, const input_s &input, o
         break;
     }
 
-
     output.delta_e = pitch_hold(output.theta_c, input.theta, input.q, params, input.Ts);
+    //printf("%d\n", (int)(100*output.phi_c));
 }
 
 float controller_example::course_hold(float chi_c, float chi, float r, const params_s &params, float Ts)
@@ -90,7 +92,7 @@ float controller_example::course_hold(float chi_c, float chi, float r, const par
     float ui = params.c_ki * c_integrator;
     float ud = params.c_kd * r;
 
-    float phi_c = sat(up + ui + ud, 40*3.14/180, -40*3.14/180);
+    float phi_c = sat(up + ui + ud, 30*3.14/180, -30*3.14/180);
     if(fabs(params.c_ki) >= 0.00001) {
         float phi_c_unsat = up + ui + ud;
         c_integrator = c_integrator + (Ts/params.c_ki) * (phi_c - phi_c_unsat);
@@ -151,7 +153,7 @@ float controller_example::airspeed_with_pitch_hold(float Va_c, float Va, const p
     float ui = params.a_p_ki * ap_integrator;
     float ud = params.a_p_kd * ap_differentiator;
 
-    float theta_c = sat(up + ui + ud, 35*3.14/180, -35*3.14/180);
+    float theta_c = sat(up + ui + ud, 45*3.14/180, -35*3.14/180);
     if(fabs(params.a_p_ki) >= 0.00001) {
         float theta_c_unsat = up + ui + ud;
         ap_integrator = ap_integrator + (Ts/params.a_p_ki) * (theta_c - theta_c_unsat);

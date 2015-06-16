@@ -213,6 +213,8 @@ private:
     * Publish the outputs
     */
     void actuator_controls_publish(struct output_s &output);
+
+    hrt_abstime prev_time_;
 };
 
 #endif // CONTROLLER_BASE_H

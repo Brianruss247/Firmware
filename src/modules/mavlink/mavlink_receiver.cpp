@@ -1526,7 +1526,7 @@ void MavlinkReceiver::handle_message_hil_vehicle_state(mavlink_message_t *msg)
 
 void MavlinkReceiver::handle_message_hil_controller_commands(mavlink_message_t *msg)
 {
-    /* vehicle_state */
+    /* controller commands */
     mavlink_hil_controller_commands_t hil_controller_commands;
     mavlink_msg_hil_controller_commands_decode(msg, &hil_controller_commands);
 

@@ -20,9 +20,9 @@ controller_base::controller_base()
     _params_handles.trim_a         = param_find("UAVBOOK_TRIM_A");
     _params_handles.trim_r         = param_find("UAVBOOK_TRIM_R");
     _params_handles.trim_t         = param_find("UAVBOOK_TRIM_T");
-    _params_handles.pwm_rad_e      = param_find("UABBOOK_PWM_RAD_E");
-    _params_handles.pwm_rad_a      = param_find("UABBOOK_PWM_RAD_A");
-    _params_handles.pwm_rad_r      = param_find("UABBOOK_PWM_RAD_R");
+    _params_handles.pwm_rad_e      = param_find("UAVBOOK_PWM_RAD_E");
+    _params_handles.pwm_rad_a      = param_find("UAVBOOK_PWM_RAD_A");
+    _params_handles.pwm_rad_r      = param_find("UAVBOOK_PWM_RAD_R");
     _params_handles.alt_toz        = param_find("UAVBOOK_ALT_TOZ");
     _params_handles.alt_hz         = param_find("UAVBOOK_ALT_HZ");
     _params_handles.tau            = param_find("UAVBOOK_TAU");
@@ -54,12 +54,14 @@ controller_base::controller_base()
     _params_handles.max_t          = param_find("UAVBOOK_MAX_T");
 
     parameters_update();
+
+    prev_time_ = hrt_absolute_time();
 }
 
 float controller_base::spin()
 {
     /* wait for state update of 2 file descriptor for 20 ms */
-    int poll_ret = poll(fds, 1, 20);
+    int poll_ret = poll(fds, 1, 50);//20);
 
     if (poll_ret < 0) {
         /* this is seriously bad - should be an emergency */
@@ -89,7 +91,9 @@ float controller_base::spin()
         input.Va_c = _controller_commands.Va_c;
         input.h_c = _controller_commands.h_c;
         input.chi_c = _controller_commands.chi_c;
-        input.Ts = 0.01f;  //todo: fix this to be the actual time step
+        hrt_abstime curr_time = hrt_absolute_time();
+        input.Ts = (prev_time_ != 0) ? (curr_time - prev_time_) * 0.000001f : 0.0f;// 0.01f;
+        prev_time_ = curr_time;
 
         struct output_s output;
 
@@ -241,9 +245,6 @@ void controller_base::actuator_controls_publish(output_s &output)
     _actuators.control[1] = (isfinite(output.delta_e)) ? output.delta_e : 0.0f;
     _actuators.control[2] = (isfinite(output.delta_r)) ? output.delta_r : 0.0f;
     _actuators.control[3] = (isfinite(output.delta_t)) ? output.delta_t : 0.0f;
-    /* for HIL purposes output the intermetiate commands */
-    _actuators.control[4] = (isfinite(output.phi_c)) ? output.phi_c : 0.0f;
-    _actuators.control[5] = (isfinite(output.theta_c)) ? output.theta_c : 0.0f;
 
     _actuators.timestamp = hrt_absolute_time();
     //printf("%d \n", (int)(100*_actuators.control[3]));
