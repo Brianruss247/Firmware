@@ -16,7 +16,7 @@
  * @max 1
  * @group UAVbook
  */
-PARAM_DEFINE_FLOAT(UAVBOOK_TRIM_E, 0.0f);
+PARAM_DEFINE_FLOAT(UAVBOOK_TRIM_E, -0.0639f);
 
 /**
  * Trim value for aileron
@@ -46,7 +46,7 @@ PARAM_DEFINE_FLOAT(UAVBOOK_TRIM_R, 0.0f);
  * @max 1
  * @group UAVbook
  */
-PARAM_DEFINE_FLOAT(UAVBOOK_TRIM_T, 0.5f);
+PARAM_DEFINE_FLOAT(UAVBOOK_TRIM_T, 0.75f);
 
 /**
  * Conversion from angle to servo command for elevator

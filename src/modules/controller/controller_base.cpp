@@ -58,7 +58,7 @@ controller_base::controller_base()
     prev_time_ = hrt_absolute_time();
 }
 
-float controller_base::spin()
+void controller_base::spin()
 {
     /* wait for state update of 2 file descriptor for 20 ms */
     int poll_ret = poll(fds, 1, 50);//20);
@@ -71,7 +71,6 @@ float controller_base::spin()
         }
 
         poll_error_counter++;
-        return -1;
     } else {
 
         parameter_update_poll();
@@ -104,7 +103,6 @@ float controller_base::spin()
         pilot_override(output);
 
         actuator_controls_publish(output);
-        return input.q;
     }
 }
 
@@ -215,6 +213,7 @@ void controller_base::convert_to_pwm(controller_base::output_s &output)
     output.delta_e = _params_extra.trim_e + output.delta_e*_params_extra.pwm_rad_e;
     output.delta_a = _params_extra.trim_a + output.delta_a*_params_extra.pwm_rad_a;
     output.delta_r = _params_extra.trim_r + output.delta_r*_params_extra.pwm_rad_r;
+    output.delta_t = _params_extra.trim_t + output.delta_t;
 }
 
 void controller_base::pilot_override(controller_base::output_s &output)
