@@ -27,6 +27,10 @@
 
 #include <uORB/uORB.h>
 #include <uORB/topics/parameter_update.h>
+#include <uORB/topics/sensor_combined.h>
+#include <uORB/topics/airspeed.h>
+#include <uORB/topics/vehicle_gps_position.h>
+#include <uORB/topics/vehicle_state.h>
 
 #include <systemlib/param/param.h>
 #include <systemlib/err.h>
@@ -34,11 +38,13 @@
 #include <systemlib/systemlib.h>
 #include <lib/mathlib/mathlib.h>
 
+#define EARTH_RADIUS 6378145.0f
+
 class estimator_base
 {
 public:
     estimator_base();
-    float spin();
+    void spin();
 
 protected:
 
@@ -92,8 +98,13 @@ protected:
 
 private:
     int _params_sub;            /**< parameter updates subscription */
+    int _sensor_combined_sub;
+//    int _airspeed_sub;
+    int _gps_sub;
+    struct pollfd fds[1];
+    int poll_error_counter;
 
-
+    orb_advert_t _vehicle_state_pub; /**< vehicle state publication */
 
     struct {
         param_t gravity;
@@ -105,12 +116,48 @@ private:
         param_t sigma_course_gps;
     } _params_handles; /**< handles for interesting parameters */
 
-    struct params_s _params;
+    struct sensor_combined_s        _sensor_combined;
+//    struct airspeed_s               _airspeed;
+//    bool                            _airspeed_new;
+    struct vehicle_gps_position_s   _gps;
+    bool                            _gps_new;
+    bool                            _gps_init;
+    int32_t                         _init_lat;	/**< Initial latitude in 1E-7 degrees */
+    int32_t                         _init_lon;	/**< Initial longitude in 1E-7 degrees */
+    int32_t                         _init_alt;	/**< Initial altitude in 1E-3 meters (millimeters) above MSL  */
+//    struct baro_report              _baro;
+    struct vehicle_state_s          _vehicle_state;
+    struct params_s                 _params;
 
     /**
     * Update our local parameter cache.
     */
     int parameters_update();
+
+    /**
+    * Check for parameter update and handle it.
+    */
+    void parameter_update_poll();
+
+    /**
+    * Check for changes in sensor combined.
+    */
+    void sensor_combined_poll();
+
+    /**
+    * Check for changes in airspeed.
+    */
+    //void airspeed_poll();
+
+    /**
+    * Check for changes in gps.
+    */
+    void gps_poll();
+
+    /**
+    * Publish the outputs
+    */
+    void vehicle_state_publish(struct output_s &output);
 };
 
 #endif // ESTIMATOR_BASE_H

@@ -75,7 +75,7 @@ static void usage(const char *reason)
         fprintf(stderr, "%s\n", reason);
     }
 
-    fprintf(stderr, "usage: controller {start|stop|status} [-p <additional params>]\n\n");
+    fprintf(stderr, "usage: estimator {start|stop|status} [-p <additional params>]\n\n");
     exit(1);
 }
 
@@ -142,12 +142,13 @@ int estimator_thread_main(int argc, char *argv[])
 
     thread_running = true;
 
-    //controller_base* cont = new controller_example();
+    estimator_base* estmr = new estimator_example();
     while(!thread_should_exit)
     {
+        estmr->spin();
 //        cont->spin();
 //        float r = cont->spin();
-//        printf("%d \n", (int)(100*r));
+//        printf("working \n");
     }
 
     warnx("[daemon] exiting.\n");
