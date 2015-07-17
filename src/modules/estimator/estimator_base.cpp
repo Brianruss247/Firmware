@@ -7,6 +7,7 @@ estimator_base::estimator_base()
 //    _airspeed_sub = orb_subscribe(ORB_ID(airspeed));
     _gps_sub = orb_subscribe(ORB_ID(vehicle_gps_position));
     _gps_init = false;
+    _baro_init = false;
     fds[0].fd = _sensor_combined_sub;
     fds[0].events = POLLIN;
     poll_error_counter = 0;
@@ -28,10 +29,10 @@ estimator_base::estimator_base()
 
 }
 
-void estimator_base::spin()
+float estimator_base::spin()
 {
     /* wait for sensor update of 2 file descriptor for 10 ms */
-    int poll_ret = poll(fds, 1, 10);
+    int poll_ret = poll(fds, 1, 50);
 
     if (poll_ret < 0) {
         /* this is seriously bad - should be an emergency */
@@ -41,6 +42,7 @@ void estimator_base::spin()
         }
 
         poll_error_counter++;
+        return 0;
 
     } else {
 
@@ -55,25 +57,33 @@ void estimator_base::spin()
         input.accel_x = _sensor_combined.accelerometer_m_s2[0];
         input.accel_y = _sensor_combined.accelerometer_m_s2[1];
         input.accel_z = _sensor_combined.accelerometer_m_s2[2];
-        input.static_pres = _sensor_combined.baro_pres_mbar*100; // 1 mbar == 100 pa
-        input.diff_pres = _sensor_combined.differential_pressure_pa;
+        input.static_pres = (_sensor_combined.baro_pres_mbar - _init_static)*100; // 1 mbar == 100 pa
+        input.diff_pres = (_sensor_combined.differential_pressure_pa < 0 ? 0 : _sensor_combined.differential_pressure_pa);
 
         if(_gps_init && _gps_new)
         {
             float conversion = (3.14159/(180*1e7)); //from 1/10th of a micro degree to radian
-            input.gps_n = EARTH_RADIUS * (_gps.lat - _init_lat) * conversion;
-            input.gps_e = EARTH_RADIUS * cosf(_init_lat * conversion) * (_gps.lon - _init_lon) * conversion;
-            input.gps_h = (_gps.alt - _init_alt) / 1e3;
+            input.gps_n = EARTH_RADIUS * (float)(_gps.lat - _init_lat) * conversion;
+            input.gps_e = EARTH_RADIUS * cosf((float)_init_lat * conversion) * (float)(_gps.lon - _init_lon) * conversion;
+            input.gps_h = (_gps.alt - _init_alt) / 1e3f;
             input.gps_Vg = _gps.vel_m_s;
             input.gps_course = _gps.cog_rad;
         }
-        input.Ts = 0;
 
-        struct output_s output;
+        if(_gps_init) // don't estimate unless you have gps
+        {
+            hrt_abstime curr_time = hrt_absolute_time();
+            input.Ts = (prev_time_ != 0) ? (curr_time - prev_time_) * 0.000001f : 0.0f;
+            prev_time_ = curr_time;
 
-        estimate(_params, input, output);
+            struct output_s output;
 
-        vehicle_state_publish(output);
+            estimate(_params, input, output);
+
+            vehicle_state_publish(output);
+        }
+
+        return input.gps_n;
     }
 }
 
@@ -113,6 +123,12 @@ void estimator_base::sensor_combined_poll()
     if (updated) {
         orb_copy(ORB_ID(sensor_combined), _sensor_combined_sub, &_sensor_combined);
     }
+
+    if(!_baro_init)
+    {
+        _init_static = 0;//_sensor_combined.baro_pres_mbar;
+        _baro_init = true;
+    }
 }
 
 //void estimator_base::airspeed_poll()
@@ -142,9 +158,9 @@ void estimator_base::gps_poll()
 
     if (_gps_new && !_gps_init) {
         _gps_init = true;
-        _init_lon = _gps.lon;
-        _init_lat = _gps.lat;
-        _init_alt = _gps.alt;
+        _init_lon = 0;//_gps.lon;
+        _init_lat = 0;//_gps.lat;
+        _init_alt = 0;//_gps.alt;
     }
 }
 

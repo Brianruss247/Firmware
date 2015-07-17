@@ -8,4 +8,6 @@ SRCS			= estimator_main.cpp \
 				estimator_example.cpp \
 				estimator_params.c
 
-MODULE_STACKSIZE 	= 2000
+MODULE_STACKSIZE 	= 4000
+
+EXTRACXXFLAGS	= -Wframe-larger-than=2400

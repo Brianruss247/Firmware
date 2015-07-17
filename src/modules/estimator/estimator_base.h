@@ -44,7 +44,7 @@ class estimator_base
 {
 public:
     estimator_base();
-    void spin();
+    float spin();
 
 protected:
 
@@ -122,12 +122,15 @@ private:
     struct vehicle_gps_position_s   _gps;
     bool                            _gps_new;
     bool                            _gps_init;
-    int32_t                         _init_lat;	/**< Initial latitude in 1E-7 degrees */
-    int32_t                         _init_lon;	/**< Initial longitude in 1E-7 degrees */
-    int32_t                         _init_alt;	/**< Initial altitude in 1E-3 meters (millimeters) above MSL  */
+    double                          _init_lat;	/**< Initial latitude in 1E-7 degrees */
+    double                          _init_lon;	/**< Initial longitude in 1E-7 degrees */
+    float                           _init_alt;	/**< Initial altitude in 1E-3 meters (millimeters) above MSL  */
+    bool                            _baro_init;
+    float                           _init_static; /**< Initial static pressure (mbar)  */
 //    struct baro_report              _baro;
     struct vehicle_state_s          _vehicle_state;
     struct params_s                 _params;
+    hrt_abstime prev_time_;
 
     /**
     * Update our local parameter cache.

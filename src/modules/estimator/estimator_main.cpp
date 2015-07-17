@@ -106,7 +106,7 @@ int estimator_main(int argc, char *argv[])
         daemon_task = task_spawn_cmd("estimator",
                          SCHED_DEFAULT,
                          SCHED_PRIORITY_DEFAULT,
-                         7000,
+                         8000,
                          estimator_thread_main,
                          (argv) ? (char * const *)&argv[2] : (char * const *)NULL);
         exit(0);
@@ -145,10 +145,14 @@ int estimator_thread_main(int argc, char *argv[])
     estimator_base* estmr = new estimator_example();
     while(!thread_should_exit)
     {
-        estmr->spin();
-//        cont->spin();
-//        float r = cont->spin();
-//        printf("working \n");
+
+//        estmr->spin();
+        float r = estmr->spin();
+        if(r > 0.00001f || r < -0.00001f)
+        {
+            ;//printf("%d \n", (int)(r*100));
+        }
+
     }
 
     warnx("[daemon] exiting.\n");

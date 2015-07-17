@@ -1624,9 +1624,93 @@ protected:
 			msg.mode = mavlink_base_mode;
 			msg.nav_mode = 0;
 
+            //printf("%d %d\n", (int)(100*act.output[3]), (int)(100*out[3]));
+            printf("throttle: %d theta_c: %d\n", (int)(100*out[3]), (int)(100*out[5]));
 			_mavlink->send_message(MAVLINK_MSG_ID_HIL_CONTROLS, &msg);
 		}
 	}
+};
+
+class MavlinkStreamHILVehicleState : public MavlinkStream
+{
+public:
+    const char *get_name() const
+    {
+        return MavlinkStreamHILVehicleState::get_name_static();
+    }
+
+    static const char *get_name_static()
+    {
+        return "HIL_VEHICLE_STATE";
+    }
+
+    uint8_t get_id()
+    {
+        return MAVLINK_MSG_ID_HIL_VEHICLE_STATE;
+    }
+
+    static MavlinkStream *new_instance(Mavlink *mavlink)
+    {
+        return new MavlinkStreamHILVehicleState(mavlink);
+    }
+
+    unsigned get_size()
+    {
+        return MAVLINK_MSG_ID_HIL_VEHICLE_STATE_LEN + MAVLINK_NUM_NON_PAYLOAD_BYTES;
+    }
+
+private:
+    MavlinkOrbSubscription *_state_sub;
+    uint64_t _state_time;
+
+    /* do not allow top copying this class */
+    MavlinkStreamHILVehicleState(MavlinkStreamHILVehicleState &);
+    MavlinkStreamHILVehicleState& operator = (const MavlinkStreamHILVehicleState &);
+
+protected:
+    explicit MavlinkStreamHILVehicleState(Mavlink *mavlink) : MavlinkStream(mavlink),
+        _state_sub(_mavlink->add_orb_subscription(ORB_ID(vehicle_state))),
+        _state_time(0)
+    {}
+
+    void send(const hrt_abstime t)
+    {
+        struct vehicle_state_s state;
+
+        bool updated = _state_sub->update(&_state_time, &state);
+
+        if (updated) {
+
+            mavlink_hil_vehicle_state_t msg;
+
+            msg.time_usec = hrt_absolute_time();
+            msg.position[0] = state.position[0];
+            msg.position[1] = state.position[1];
+            msg.position[2] = state.position[2];
+            msg.Va = state.Va;
+            msg.alpha = state.alpha;
+            msg.beta = state.beta;
+            msg.phi = state.phi;
+            msg.theta = state.theta;
+            msg.psi = state.psi;
+            msg.chi = state.chi;
+            msg.p = state.p;
+            msg.q = state.q;
+            msg.r = state.r;
+            msg.Vg = state.Vg;
+            msg.wn = state.wn;
+            msg.we = state.we;
+            msg.quat_valid = state.quat_valid;
+            msg.quat[0] = state.quat[0];
+            msg.quat[1] = state.quat[1];
+            msg.quat[2] = state.quat[2];
+            msg.quat[3] = state.quat[3];
+
+            //printf("%d %d\n", (int)(100*act.output[3]), (int)(100*out[3]));
+            //printf("throttle: %d theta_c: %d\n", (int)(100*out[3]), (int)(100*out[5]));
+            _mavlink->send_message(MAVLINK_MSG_ID_HIL_VEHICLE_STATE, &msg);
+        }
+    }
 };
 
 
@@ -2254,6 +2338,7 @@ const StreamListItem *streams_list[] = {
 	new StreamListItem(&MavlinkStreamServoOutputRaw<2>::new_instance, &MavlinkStreamServoOutputRaw<2>::get_name_static),
 	new StreamListItem(&MavlinkStreamServoOutputRaw<3>::new_instance, &MavlinkStreamServoOutputRaw<3>::get_name_static),
 	new StreamListItem(&MavlinkStreamHILControls::new_instance, &MavlinkStreamHILControls::get_name_static),
+    new StreamListItem(&MavlinkStreamHILVehicleState::new_instance, &MavlinkStreamHILVehicleState::get_name_static),
 	new StreamListItem(&MavlinkStreamPositionTargetGlobalInt::new_instance, &MavlinkStreamPositionTargetGlobalInt::get_name_static),
 	new StreamListItem(&MavlinkStreamLocalPositionSetpoint::new_instance, &MavlinkStreamLocalPositionSetpoint::get_name_static),
 	new StreamListItem(&MavlinkStreamAttitudeTarget::new_instance, &MavlinkStreamAttitudeTarget::get_name_static),

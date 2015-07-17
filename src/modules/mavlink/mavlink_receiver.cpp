@@ -145,7 +145,7 @@ MavlinkReceiver::~MavlinkReceiver()
 void
 MavlinkReceiver::handle_message(mavlink_message_t *msg)
 {
-	switch (msg->msgid) {
+    switch (msg->msgid) {
 	case MAVLINK_MSG_ID_COMMAND_LONG:
 		handle_message_command_long(msg);
 		break;
@@ -217,6 +217,15 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 
     case MAVLINK_MSG_ID_HIL_CONTROLLER_COMMANDS:
         handle_message_hil_controller_commands(msg);
+        break;
+
+    case MAVLINK_MSG_ID_HIL_SENSOR:
+        handle_message_hil_sensor(msg);
+        break;
+
+    case MAVLINK_MSG_ID_HIL_GPS:
+        handle_message_hil_gps(msg);
+        break;
 
 	default:
 		break;
@@ -234,9 +243,9 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 	 */
 	if (_mavlink->get_hil_enabled()) {
 		switch (msg->msgid) {
-		case MAVLINK_MSG_ID_HIL_SENSOR:
-			handle_message_hil_sensor(msg);
-			break;
+//		case MAVLINK_MSG_ID_HIL_SENSOR:
+//			handle_message_hil_sensor(msg);
+//			break;
 
 		case MAVLINK_MSG_ID_HIL_STATE_QUATERNION:
 			handle_message_hil_state_quaternion(msg);
@@ -258,9 +267,9 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 
    	if (_mavlink->get_hil_enabled() || (_mavlink->get_use_hil_gps() && msg->sysid == mavlink_system.sysid)) {
 		switch (msg->msgid) {
-		case MAVLINK_MSG_ID_HIL_GPS:
-			handle_message_hil_gps(msg);
-			break;
+//		case MAVLINK_MSG_ID_HIL_GPS:
+//			handle_message_hil_gps(msg);
+//			break;
 
 		default:
 			break;

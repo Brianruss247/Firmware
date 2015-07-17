@@ -80,6 +80,7 @@ MODULES		+= modules/attitude_estimator_ekf
 MODULES		+= modules/attitude_estimator_q
 MODULES		+= modules/ekf_att_pos_estimator
 MODULES		+= modules/position_estimator_inav
+MODULES		+= modules/estimator
 
 #
 # Vehicle Control
@@ -91,7 +92,6 @@ MODULES		+= modules/mc_att_control
 MODULES		+= modules/mc_pos_control
 MODULES 	+= modules/vtol_att_control
 MODULES		+= modules/controller
-MODULES		+= modules/estimator
 
 #
 # Logging
