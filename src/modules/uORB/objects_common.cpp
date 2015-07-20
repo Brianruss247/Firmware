@@ -262,3 +262,6 @@ ORB_DEFINE(vehicle_state, struct vehicle_state_s);
 
 #include "topics/controller_commands.h"
 ORB_DEFINE(controller_commands, struct controller_commands_s);
+
+#include "topics/current_path.h"
+ORB_DEFINE(current_path, struct current_path_s);
