@@ -265,3 +265,6 @@ ORB_DEFINE(controller_commands, struct controller_commands_s);
 
 #include "topics/current_path.h"
 ORB_DEFINE(current_path, struct current_path_s);
+
+#include "topics/new_waypoint.h"
+ORB_DEFINE(new_waypoint, struct new_waypoint_s);
