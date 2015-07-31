@@ -104,14 +104,15 @@ void path_manager_base::new_waypoint_poll()
     if (updated) {
         struct new_waypoint_s new_waypoint;
         orb_copy(ORB_ID(new_waypoint), _new_waypoint_sub, &new_waypoint);
-        if(new_waypoint.set_current)
-        { ; } //set this waypoint to be exicuted now by placing it in the array and moving ptr_a
-        else {;}
+//        if(new_waypoint.set_current)
+//        { ; } //set this waypoint to be exicuted now by placing it in the array and moving ptr_a
+//        else {;}
         _waypoints[_num_waypoints].w[0] = new_waypoint.w[0];
         _waypoints[_num_waypoints].w[1] = new_waypoint.w[1];
         _waypoints[_num_waypoints].w[2] = new_waypoint.w[2];
         _waypoints[_num_waypoints].chi_d = new_waypoint.chi_d;
         _waypoints[_num_waypoints].chi_valid = new_waypoint.chi_valid;
+        _waypoints[_num_waypoints].Va_d = new_waypoint.Va_d;
         _num_waypoints++;
         warnx("new waypoint received");
     }

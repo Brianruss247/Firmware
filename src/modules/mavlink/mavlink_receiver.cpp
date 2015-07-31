@@ -124,6 +124,7 @@ MavlinkReceiver::MavlinkReceiver(Mavlink *parent) :
 	_time_offset_pub(-1),
     _vehicle_state_pub(-1),
     _controller_commands_pub(-1),
+    _new_waypoint_pub(-1),
     _control_mode_sub(orb_subscribe(ORB_ID(vehicle_control_mode))),
 	_hil_frames(0),
 	_old_timestamp(0),
@@ -209,6 +210,10 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 	case MAVLINK_MSG_ID_TIMESYNC:
 		handle_message_timesync(msg);
 		break;
+
+    case MAVLINK_MSG_ID_NEW_WAYPOINT:
+        handle_message_new_waypoint(msg);
+        break;
 
     // todo: figure out how to enable hil in mavlink move the following down below
     case MAVLINK_MSG_ID_HIL_VEHICLE_STATE:
@@ -1556,6 +1561,32 @@ void MavlinkReceiver::handle_message_hil_controller_commands(mavlink_message_t *
         _controller_commands_pub = orb_advertise(ORB_ID(controller_commands), &_controller_commands);
     } else {
         orb_publish(ORB_ID(controller_commands), _controller_commands_pub, &_controller_commands);
+    }
+}
+
+void MavlinkReceiver::handle_message_new_waypoint(mavlink_message_t *msg)
+{
+    /* new_waypoint */
+    mavlink_new_waypoint_t new_waypoint;
+    mavlink_msg_new_waypoint_decode(msg, &new_waypoint);
+
+    struct new_waypoint_s _new_waypoint;
+
+    _new_waypoint.timestamp = hrt_absolute_time();
+
+    for(int i=0;i<3;i++)
+    {
+        _new_waypoint.w[i] = new_waypoint.w[i];
+    }
+    _new_waypoint.chi_d = new_waypoint.chi_d;
+    _new_waypoint.chi_valid = new_waypoint.chi_valid;
+    _new_waypoint.Va_d = new_waypoint.Va_d;
+    _new_waypoint.set_current = new_waypoint.set_current;
+
+    if (_new_waypoint_pub<= 0) {
+        _new_waypoint_pub = orb_advertise(ORB_ID(new_waypoint), &_new_waypoint);
+    } else {
+        orb_publish(ORB_ID(new_waypoint), _new_waypoint_pub, &_new_waypoint);
     }
 }
 
