@@ -52,17 +52,18 @@ protected:
         float w[3];
         float chi_d;
         bool chi_valid;
+        float Va_d;
     };
 
     struct waypoint_s _waypoints[SIZE_WAYPOINT_ARRAY];
-    int _valid_waypoints;
+    int _num_waypoints;
     struct waypoint_s* _ptr_a;
 
     struct input_s{
         float pn;               /** position north */
         float pe;               /** position east */
         float h;                /** altitude */
-//        float chi;              /** course angle */
+        float chi;              /** course angle */
     };
 
     struct output_s{
@@ -76,9 +77,7 @@ protected:
     };
 
     struct params_s {
-        float chi_infty;
-        float k_path;
-        float k_orbit;
+        float R_min;
     };
 
     virtual void manage(const struct params_s &params, const struct input_s &input, struct output_s &output) = 0;
@@ -93,9 +92,7 @@ private:
     orb_advert_t _current_path_pub; /**< controller commands publication */
 
     struct {
-        param_t chi_infty;
-        param_t k_path;
-        param_t k_orbit;
+        param_t R_min;
     } _params_handles; /**< handles for interesting parameters */
 
     struct vehicle_state_s             _vehicle_state;     /**< vehicle state */

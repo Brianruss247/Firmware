@@ -8,31 +8,11 @@
 #include <systemlib/param/param.h>
 
 /**
- * Desired course to track striaght line path
+ * minimum turn radius
  *
- * @unit rad
- * @min 0
- * @max 1.5708
+ * @unit m
+ * @min 1
+ * @max 50
  * @group UAVbook
  */
-//PARAM_DEFINE_FLOAT(UAVBOOK_CHI_INFTY, 1.5708f);
-
-/**
- * Control gian for tracking a striaght line path
- *
- * @unit 
- * @min 0
- * @max 1
- * @group UAVbook
- */
-//PARAM_DEFINE_FLOAT(UAVBOOK_K_PATH, 0.025f);
-
-/**
- * Control gian for tracking an orbital path
- *
- * @unit 
- * @min 0
- * @max 1
- * @group UAVbook
- */
-//PARAM_DEFINE_FLOAT(UAVBOOK_K_ORBIT, 0.05f);
+PARAM_DEFINE_FLOAT(UAVBOOK_R_MIN, 20.0f);

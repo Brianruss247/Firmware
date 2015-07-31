@@ -18,12 +18,10 @@ path_manager_base::path_manager_base()
         memset(&_waypoints[i], 0, sizeof(_waypoints[i]));
         _waypoints[i].w[2] = 30.0f;
     }
-    _valid_waypoints = 0;
+    _num_waypoints = 0;
     _ptr_a = &_waypoints[0];
 
-    _params_handles.chi_infty      = param_find("UAVBOOK_CHI_INFTY");
-    _params_handles.k_path         = param_find("UAVBOOK_K_PATH");
-    _params_handles.k_orbit        = param_find("UAVBOOK_K_ORBIT");
+    _params_handles.R_min      = param_find("UAVBOOK_R_MIN");
 
     parameters_update();
 }
@@ -65,9 +63,7 @@ float path_manager_base::spin()
 
 int path_manager_base::parameters_update()
 {
-    param_get(_params_handles.chi_infty, &_params.chi_infty);
-    param_get(_params_handles.k_path, &_params.k_path);
-    param_get(_params_handles.k_orbit, &_params.k_orbit);
+    param_get(_params_handles.R_min, &_params.R_min);
 
     return OK;
 }
@@ -111,12 +107,13 @@ void path_manager_base::new_waypoint_poll()
         if(new_waypoint.set_current)
         { ; } //set this waypoint to be exicuted now by placing it in the array and moving ptr_a
         else {;}
-        _waypoints[_valid_waypoints].w[0] = new_waypoint.w[0];
-        _waypoints[_valid_waypoints].w[1] = new_waypoint.w[1];
-        _waypoints[_valid_waypoints].w[2] = new_waypoint.w[2];
-        _waypoints[_valid_waypoints].chi_d = new_waypoint.chi_d;
-        _waypoints[_valid_waypoints].chi_valid = new_waypoint.chi_valid;
-        _valid_waypoints++;
+        _waypoints[_num_waypoints].w[0] = new_waypoint.w[0];
+        _waypoints[_num_waypoints].w[1] = new_waypoint.w[1];
+        _waypoints[_num_waypoints].w[2] = new_waypoint.w[2];
+        _waypoints[_num_waypoints].chi_d = new_waypoint.chi_d;
+        _waypoints[_num_waypoints].chi_valid = new_waypoint.chi_valid;
+        _num_waypoints++;
+        warnx("new waypoint received");
     }
 }
 
