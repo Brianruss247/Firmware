@@ -38,8 +38,6 @@
 #include <lib/mathlib/mathlib.h>
 #include <lib/geo/geo.h>
 
-#define MANUAL_THRESHOLD 0.05f
-
 class path_follower_base
 {
 public:
