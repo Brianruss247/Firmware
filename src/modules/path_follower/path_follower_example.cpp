@@ -1,6 +1,6 @@
 #include "path_follower_example.h"
 
-path_follower_example::path_follower_example()
+path_follower_example::path_follower_example() : path_follower_base()
 {
 
 }
