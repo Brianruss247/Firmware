@@ -7,12 +7,14 @@
 # Start the attitude and position estimator
 #
 #ekf_att_pos_estimator start
+estimator start
 
 #
 # Start attitude controller
 #
 #fw_att_control start
 #fw_pos_control_l1 start
+controller start
 
 #
 # Start Land Detector
@@ -22,4 +24,5 @@
 #
 # Misc apps
 #
-controller start
+path_follower start
+path_manager start

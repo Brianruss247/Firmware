@@ -81,6 +81,18 @@ then
         set MODE custom
 fi
 
+if param compare SYS_AUTOSTART 2198 198
+then
+	sh /etc/init.d/2198_uavbook_hil
+	set MODE custom
+fi
+
+if param compare SYS_AUTOSTART 2199 199
+then
+	sh /etc/init.d/2199_white_knight_3
+	set MODE custom
+fi
+
 #
 # Flying wing
 #

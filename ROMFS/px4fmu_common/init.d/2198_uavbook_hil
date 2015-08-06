@@ -1,0 +1,12 @@
+#!nsh
+
+set VEHICLE_TYPE fw
+
+mavlink start -d /dev/ttyS1 -m custom
+#mavlink stream -d /dev/ttyS1 -s HIL_CONTROLS -r 50
+#mavlink stream -d /dev/ttyS1 -s HIL_VEHICLE_STATE -r 75
+
+sensors stop
+
+gps stop
+

@@ -126,7 +126,7 @@ void estimator_base::sensor_combined_poll()
 
     if(!_baro_init)
     {
-        _init_static = 0;//_sensor_combined.baro_pres_mbar;
+        _init_static = _sensor_combined.baro_pres_mbar;
         _baro_init = true;
     }
 }
@@ -158,9 +158,9 @@ void estimator_base::gps_poll()
 
     if (_gps_new && !_gps_init) {
         _gps_init = true;
-        _init_lon = 0;//_gps.lon;
-        _init_lat = 0;//_gps.lat;
-        _init_alt = 0;//_gps.alt;
+        _init_lon = _gps.lon;
+        _init_lat = _gps.lat;
+        _init_alt = _gps.alt;
     }
 }
 
