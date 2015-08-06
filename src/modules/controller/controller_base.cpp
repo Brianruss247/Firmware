@@ -219,23 +219,27 @@ void controller_base::convert_to_pwm(controller_base::output_s &output)
 
 void controller_base::pilot_override(controller_base::output_s &output)
 {
-    if (_manual_control_sp.y > MANUAL_THRESHOLD || _manual_control_sp.y < -MANUAL_THRESHOLD)
+    if (_manual_control_sp.y > MANUAL_THRESHOLD || _manual_control_sp.y < -MANUAL_THRESHOLD || _manual_control_sp.mode_switch == 3)
     {
         output.delta_a = _manual_control_sp.y;
     }
 
-    if (_manual_control_sp.x > MANUAL_THRESHOLD || _manual_control_sp.x < -MANUAL_THRESHOLD)
+    if (_manual_control_sp.x > MANUAL_THRESHOLD || _manual_control_sp.x < -MANUAL_THRESHOLD || _manual_control_sp.mode_switch == 3)
     {
         output.delta_e = -_manual_control_sp.x;
     }
 
-    if (_manual_control_sp.r > MANUAL_THRESHOLD || _manual_control_sp.r < -MANUAL_THRESHOLD)
+    if (_manual_control_sp.r > MANUAL_THRESHOLD || _manual_control_sp.r < -MANUAL_THRESHOLD || _manual_control_sp.mode_switch == 3)
     {
         output.delta_r = _manual_control_sp.r;
     }
 
     // take min of commanded throttle and stick throttle
     output.delta_t = math::min(output.delta_t, _manual_control_sp.z);
+    if(_manual_control_sp.mode_switch == 3)
+    {
+        output.delta_t = _manual_control_sp.z;
+    }
 }
 
 void controller_base::actuator_controls_publish(output_s &output)
