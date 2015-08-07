@@ -57,7 +57,7 @@ float estimator_base::spin()
         input.accel_x = _sensor_combined.accelerometer_m_s2[0];
         input.accel_y = _sensor_combined.accelerometer_m_s2[1];
         input.accel_z = _sensor_combined.accelerometer_m_s2[2];
-        input.static_pres = (_sensor_combined.baro_pres_mbar - _init_static)*100; // 1 mbar == 100 pa
+        input.static_pres = (_init_static - _sensor_combined.baro_pres_mbar)*100; // 1 mbar == 100 pa
         input.diff_pres = (_sensor_combined.differential_pressure_pa < 0 ? 0 : _sensor_combined.differential_pressure_pa);
 
         if(_gps_init && _gps_new)

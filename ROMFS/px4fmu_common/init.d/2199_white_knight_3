@@ -7,6 +7,9 @@ set MIXER AERT
 param set UAVBOOK_PWM_RAD_A -1.57
 param set UAVBOOK_PWM_RAD_E 1.57
 
+param set UAVBOOK_TRIM_A 0.058
+param set UAVBOOK_TRIM_A 0.224
+
 mavlink stop-all
 mavlink start -d /dev/ttyS1 -m custom
 mavlink stream -d /dev/ttyS1 -s HIL_VEHICLE_STATE -r 75

@@ -16,7 +16,7 @@ estimator_example::estimator_example()
     P_a.identity();
     P_a *= powf(math::radians(20.0f),2);
     xhat_p.zero();
-    xhat_p(2) = 11;
+    xhat_p(2) = 9;
     P_p.identity();
     P_p(0,0) = .03;
     P_p(1,1) = .03;
@@ -372,7 +372,12 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
     {
         if(!isfinite(xhat_p(i)))
         {
+//            warnx("estimator problem %d",i);
             xhat_p(i) = 0;
+            if(i == 2)
+            {
+                xhat_p(i) = 9;
+            }
             P_p.identity();
             P_p(0,0) = .03;
             P_p(1,1) = .03;

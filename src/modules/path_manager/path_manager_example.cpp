@@ -12,7 +12,7 @@ void path_manager_example::manage(const params_s &params, const input_s &input, 
     if(_num_waypoints < 2)
     {
         output.flag = true;
-        output.Va_d = 11;
+        output.Va_d = 9;
         output.r[0] = input.pn;
         output.r[1] = input.pe;
         output.r[2] = -input.h;
