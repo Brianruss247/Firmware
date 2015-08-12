@@ -97,6 +97,8 @@ protected:
     virtual void estimate(const struct params_s &params, const struct input_s &input, struct output_s &output) = 0;
 
 private:
+    int _time_to_run;
+
     int _params_sub;            /**< parameter updates subscription */
     int _sensor_combined_sub;
 //    int _airspeed_sub;
