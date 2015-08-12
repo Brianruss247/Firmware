@@ -35,8 +35,8 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
 {
     if(alpha <= 0.00001f)
     {
-        lpf_static = params.rho*params.gravity*100;
-        lpf_diff = 1/2 * params.rho*11*11;
+        lpf_static = 0;//params.rho*params.gravity*100;
+        lpf_diff = 0;//1/2 * params.rho*11*11;
 
 
         Q_a.zero();
@@ -62,7 +62,7 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
     }
 
     float lpf_a = 50;
-    float lpf_a1 = 50;
+    float lpf_a1 = 3;
     alpha = exp(-lpf_a*input.Ts);
     alpha1 = exp(-lpf_a1*input.Ts);
 
@@ -76,11 +76,11 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
     float rhat = lpf_gyro_z;
 
     // low pass filter static pressure sensor and invert to esimate altitude
-    lpf_static = alpha1*lpf_static + (1-alpha)*input.static_pres;
+    lpf_static = alpha1*lpf_static + (1-alpha1)*input.static_pres;
     float hhat = lpf_static/params.rho/params.gravity;
 
     // low pass filter diff pressure sensor and invert to extimate Va
-    lpf_diff = alpha1*lpf_diff + (1-alpha)*input.diff_pres;
+    lpf_diff = alpha1*lpf_diff + (1-alpha1)*input.diff_pres;
     float Vahat = sqrt(2/params.rho*lpf_diff);
 
     // low pass filter accelerometers

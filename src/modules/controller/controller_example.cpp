@@ -17,7 +17,7 @@ void controller_example::control(const params_s &params, const input_s &input, o
 {
     output.delta_r = 0; //cooridinated_turn_hold(input.beta, params, input.Ts)
     output.phi_c = course_hold(input.chi_c, input.chi, input.r, params, input.Ts);
-    output.delta_a = roll_hold(output.phi_c, input.phi, input.p, params, input.Ts);
+    output.delta_a = roll_hold(30*M_PI_F/180, input.phi, input.p, params, input.Ts);
 
     //printf("%d %d ", (int)(state), (int)(input.h));
 
@@ -26,6 +26,7 @@ void controller_example::control(const params_s &params, const input_s &input, o
         output.delta_t = params.max_t;
         output.theta_c = 20*3.14/180;
         if(input.h >= params.alt_toz) {
+            warnx("climb");
             state = alt_state::ClimbZone;
             ap_error = 0;
             ap_integrator = 0;
@@ -36,6 +37,7 @@ void controller_example::control(const params_s &params, const input_s &input, o
         output.delta_t = params.max_t;
         output.theta_c = airspeed_with_pitch_hold(input.Va_c, input.va, params, input.Ts);
         if(input.h >= input.h_c - params.alt_hz) {
+            warnx("hold");
             state = alt_state::AltitudeHoldZone;
             at_error = 0;
             at_integrator = 0;
@@ -44,6 +46,7 @@ void controller_example::control(const params_s &params, const input_s &input, o
             a_integrator = 0;
             a_differentiator = 0;
         } else if(input.h <= params.alt_toz) {
+            warnx("takeoff");
             state = alt_state::TakeOffZone;
         }
         break;
@@ -52,6 +55,7 @@ void controller_example::control(const params_s &params, const input_s &input, o
         output.theta_c = airspeed_with_pitch_hold(input.Va_c, input.va, params, input.Ts);
         if(input.h <= input.h_c + params.alt_hz)
         {
+            warnx("hold");
             state = alt_state::AltitudeHoldZone;
             at_error = 0;
             at_integrator = 0;
@@ -65,11 +69,13 @@ void controller_example::control(const params_s &params, const input_s &input, o
         output.delta_t = airspeed_with_throttle_hold(input.Va_c, input.va, params, input.Ts);
         output.theta_c = altitiude_hold(input.h_c, input.h, params, input.Ts);
         if(input.h >= input.h_c + params.alt_hz) {
+            warnx("desend");
             state = alt_state::DescendZone;
             ap_error = 0;
             ap_integrator = 0;
             ap_differentiator = 0;
         } else if(input.h <= input.h_c - params.alt_hz) {
+            warnx("climb");
             state = alt_state::ClimbZone;
             ap_error = 0;
             ap_integrator = 0;
