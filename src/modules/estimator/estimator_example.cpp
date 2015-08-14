@@ -25,10 +25,10 @@ estimator_example::estimator_example()
     P_p(4,4) = .04;
     P_p(5,5) = .04;
     P_p(6,6) = math::radians(5.0f);
-    gps_n_old = -9999;
-    gps_e_old = -9999;
-    gps_Vg_old = -9999;
-    gps_course_old = -9999;
+    gps_n_old = 0;
+    gps_e_old = 0;
+    gps_Vg_old = 5;
+    gps_course_old = 0;
 }
 
 void estimator_example::estimate(const params_s &params, const input_s &input, output_s &output)
@@ -38,10 +38,9 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
         lpf_static = 0;//params.rho*params.gravity*100;
         lpf_diff = 0;//1/2 * params.rho*11*11;
 
-
         Q_a.zero();
         Q_a(0,0) = 0.0000001;
-        Q_a(1,1) = 0.0000000001;
+        Q_a(1,1) = 0.0000001;
 
         R_accel.zero();
         R_accel(0,0) = powf(params.sigma_accel,2);
@@ -50,7 +49,7 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
 
         Q_p.identity();
         Q_p *= 0.0001f;
-        Q_p(3,3) = 0.00000001f;
+        Q_p(3,3) = 0.000001f;
 
         R_p.zero();
         R_p(0,0) = powf(params.sigma_n_gps,2);
@@ -62,7 +61,7 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
     }
 
     float lpf_a = 50;
-    float lpf_a1 = 3;
+    float lpf_a1 = 2;
     alpha = exp(-lpf_a*input.Ts);
     alpha1 = exp(-lpf_a1*input.Ts);
 
@@ -82,6 +81,32 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
     // low pass filter diff pressure sensor and invert to extimate Va
     lpf_diff = alpha1*lpf_diff + (1-alpha1)*input.diff_pres;
     float Vahat = sqrt(2/params.rho*lpf_diff);
+
+//    if(!isfinite(hhat) || hhat < -500 || hhat > 500)
+//    {
+//        warnx("problem 20");
+//        hhat = 10;
+//    }
+//    if(!isfinite(Vahat) || Vahat < 0 || Vahat > 25)
+//    {
+//        warnx("problem 21");
+//        Vahat = 9;
+//    }
+//    if(!isfinite(phat) || phat < math::radians(-420.0f) || phat > math::radians(420.0f))
+//    {
+//        warnx("problem 22");
+//        phat = 0;
+//    }
+//    if(!isfinite(qhat) || qhat < math::radians(-420.0f) || qhat > math::radians(420.0f))
+//    {
+//        warnx("problem 23");
+//        qhat = 0;
+//    }
+//    if(!isfinite(rhat) || rhat < math::radians(-420.0f) || rhat > math::radians(420.0f))
+//    {
+//        warnx("problem 24");
+//        rhat = 0;
+//    }
 
     // low pass filter accelerometers
 //    lpf_accel_x = alpha*lpf_accel_x + (1-alpha)*input.accel_x;
@@ -169,14 +194,16 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
     K_a(1) = L_a(1,0);
     xhat_a += K_a *(input.accel_z - h_a);
 
-    if(xhat_a(0) > (float)math::radians(90.0) || xhat_a(0) < (float)math::radians(-90.0) || !isfinite(xhat_a(0)))
+    if(xhat_a(0) > (float)math::radians(85.0) || xhat_a(0) < (float)math::radians(-85.0) || !isfinite(xhat_a(0)))
     {
+        warnx("problem 00");
         xhat_a(0) = 0;
         P_a.identity();
         P_a *= powf(math::radians(20.0f),2);
     }
     if(xhat_a(1) > (float)math::radians(80.0) || xhat_a(1) < (float)math::radians(-80.0) || !isfinite(xhat_a(1)))
     {
+        warnx("problem 01");
         xhat_a(1) = 0;
         P_a.identity();
         P_a *= powf(math::radians(20.0f),2);
@@ -188,6 +215,8 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
     // implement continous-discrete EKF to estimate pn, pe, chi, Vg
     // prediction step
     float psidot, tmp, Vgdot;
+    if(fabsf(xhat_p(2)) < 0.01f)
+        xhat_p(2) = 0.01;
     for(int i=0;i<N;i++)
     {
         psidot = (qhat*sinf(phihat) + rhat*cosf(phihat))/cosf(thetahat);
@@ -218,20 +247,20 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
         P_p += (A_p*P_p + P_p*A_p.transposed() + Q_p)*(input.Ts/N);
     }
 
-    if(xhat_p(3) > (float)math::radians(180.0) || xhat_p(3) < (float)math::radians(-180.0))
-    {
-        xhat_p(3) = 0;
-    }
+//    while(xhat_p(3) > math::radians(180.0f)) xhat_p(3) = xhat_p(3) - math::radians(360.0f);
+//    while(xhat_p(3) < math::radians(-180.0f)) xhat_p(3) = xhat_p(3) + math::radians(360.0f);
+//    if(xhat_p(3) > math::radians(180.0f) || xhat_p(3) < math::radians(-180.0f))
+//    {
+//        warnx("problem 17");
+//        xhat_p(3) = 0;
+//    }
 
     // measurement updates
 //    if(input.gps_n != gps_n_old ||
 //            input.gps_e != gps_e_old ||
 //            input.gps_Vg != gps_Vg_old ||
 //            input.gps_course != gps_course_old)
-    if(fabs(input.gps_n - gps_n_old) > 0.0001 ||
-            fabs(input.gps_e - gps_e_old) > 0.0001 ||
-            fabs(input.gps_Vg - gps_Vg_old) > 0.0001 ||
-            fabs(input.gps_course - gps_course_old) > 0.0001)
+    if(input.gps_new)
     {
         math::Matrix<7,7> I_p;
         I_p.identity();
@@ -274,29 +303,30 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
         K_p(6) = L_p(6,0);
         xhat_p = xhat_p + K_p*(input.gps_e - h_p);
 
-//        // gps ground speed
-//        h_p = xhat_p(2);
-//        C_p.zero();
-//        C_p(0,2) = 1;
-//        C_p_t.zero();
-//        C_p_t(2,0) = 1;
-//        denom(0,0) = (R_p(2,2) + (C_p*P_p*C_p_t)(0,0));
-//        L_p = (P_p*C_p_t) * denom.inversed();
-//        P_p = (I_p - L_p*C_p)*P_p;
-//        K_p(0) = L_p(0,0);
-//        K_p(1) = L_p(1,0);
-//        K_p(2) = L_p(2,0);
-//        K_p(3) = L_p(3,0);
-//        K_p(4) = L_p(4,0);
-//        K_p(5) = L_p(5,0);
-//        K_p(6) = L_p(6,0);
-//        xhat_p = xhat_p + K_p*(input.gps_Vg - h_p);
+        // gps ground speed
+        h_p = xhat_p(2);
+        C_p.zero();
+        C_p(0,2) = 1;
+        C_p_t.zero();
+        C_p_t(2,0) = 1;
+        denom(0,0) = (R_p(2,2) + (C_p*P_p*C_p_t)(0,0));
+        L_p = (P_p*C_p_t) * denom.inversed();
+        P_p = (I_p - L_p*C_p)*P_p;
+        K_p(0) = L_p(0,0);
+        K_p(1) = L_p(1,0);
+        K_p(2) = L_p(2,0);
+        K_p(3) = L_p(3,0);
+        K_p(4) = L_p(4,0);
+        K_p(5) = L_p(5,0);
+        K_p(6) = L_p(6,0);
+        xhat_p = xhat_p + K_p*(input.gps_Vg - h_p);
 
         // gps course
         //wrap course measurement
-        float temp = input.gps_course;
-        while(temp - xhat_p(3) > 3.1415f) temp = temp - 2*3.1415f;
-        while(temp - xhat_p(3) < -3.1415f) temp = temp + 2*3.1415f;
+        float gps_course = fmodf(input.gps_course, math::radians(360.0f));
+
+        while(gps_course - xhat_p(3) > math::radians(180.0f)) gps_course = gps_course - math::radians(360.0f);
+        while(gps_course - xhat_p(3) < math::radians(-180.0f)) gps_course = gps_course + math::radians(360.0f);
         h_p = xhat_p(3);
         C_p.zero();
         C_p(0,3) = 1;
@@ -312,7 +342,8 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
         K_p(4) = L_p(4,0);
         K_p(5) = L_p(5,0);
         K_p(6) = L_p(6,0);
-        xhat_p = xhat_p + K_p*(temp - h_p);
+        xhat_p = xhat_p + K_p*(gps_course - h_p);
+
 
 //        // pseudo measurement #1 y_1 = Va*cos(psi)+wn-Vg*cos(chi)
 //        h_p = Vahat*cosf(xhat_p(6)) + xhat_p(4) - xhat_p(2)*cosf(xhat_p(3));  // pseudo measurement
@@ -366,17 +397,64 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
         gps_e_old      = input.gps_e;
         gps_Vg_old     = input.gps_Vg;
         gps_course_old = input.gps_course;
+
+        if(xhat_p(0) > 1000 || xhat_p(0) < -1000)
+        {
+            warnx("problem 11");
+            xhat_p(0) = input.gps_n;
+        }
+        if(xhat_p(1) > 1000 || xhat_p(1) < -1000)
+        {
+            warnx("problem 12");
+            xhat_p(1) = input.gps_e;
+        }
+//        if(xhat_p(2) > 35 || xhat_p(2) < 0)
+//        {
+//            warnx("problem 13");
+//            xhat_p(2) = input.gps_Vg;
+//        }
+//        if(xhat_p(3) > math::radians(720.0f) || xhat_p(3) < math::radians(-720.0f))
+//        {
+//            warnx("problem 14");
+//            xhat_p(3) = input.gps_course;
+//        }
+//        if(xhat_p(6) > math::radians(720.0f) || xhat_p(6) < math::radians(-720.0f))
+//        {
+//            warnx("problem 15");
+//            xhat_p(6) = input.gps_course;
+//        }
     }
 
+    bool problem = false;
+    int prob_index;
     for(int i=0;i<7;i++)
     {
         if(!isfinite(xhat_p(i)))
         {
-//            warnx("estimator problem %d",i);
-            xhat_p(i) = 0;
-            if(i == 2)
+            if(!problem)
             {
-                xhat_p(i) = 9;
+                problem = true;
+                prob_index = i;
+            }
+            switch(i)
+            {
+            case 0:
+                xhat_p(i) = gps_n_old;
+                break;
+            case 1:
+                xhat_p(i) = gps_e_old;
+                break;
+            case 2:
+                xhat_p(i) = gps_Vg_old;
+                break;
+            case 3:
+                xhat_p(i) = gps_course_old;
+                break;
+            case 6:
+                xhat_p(i) = gps_course_old;
+                break;
+            default:
+                xhat_p(i) = 0;
             }
             P_p.identity();
             P_p(0,0) = .03;
@@ -387,6 +465,12 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
             P_p(5,5) = .04;
             P_p(6,6) = math::radians(5.0f);
         }
+    }
+    if(problem) { warnx("problem 10 %d %d", prob_index, (input.gps_new ? 1 : 0)); }
+    if(xhat_p(6) - xhat_p(3) > math::radians(360.0f) || xhat_p(6) - xhat_p(3) < math::radians(-360.0f))
+    {
+        //xhat_p(3) = fmodf(xhat_p(3),math::radians(360.0f));
+        xhat_p(6) = fmodf(xhat_p(6),math::radians(360.0f));
     }
 
     float pnhat = xhat_p(0);

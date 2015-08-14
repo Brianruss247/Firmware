@@ -108,7 +108,7 @@ int controller_main(int argc, char *argv[])
         daemon_task = task_spawn_cmd("controller",
                          SCHED_DEFAULT,
                          SCHED_PRIORITY_DEFAULT,
-                         7000,
+                         1500,
                          controller_thread_main,
                          (argv) ? (char * const *)&argv[2] : (char * const *)NULL);
         exit(0);

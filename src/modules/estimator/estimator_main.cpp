@@ -106,7 +106,7 @@ int estimator_main(int argc, char *argv[])
         daemon_task = task_spawn_cmd("estimator",
                          SCHED_DEFAULT,
                          SCHED_PRIORITY_MAX - 5,
-                         8000,
+                         3500,
                          estimator_thread_main,
                          (argv) ? (char * const *)&argv[2] : (char * const *)NULL);
         exit(0);

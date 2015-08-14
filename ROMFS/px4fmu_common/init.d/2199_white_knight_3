@@ -4,7 +4,7 @@ set VEHICLE_TYPE fw
 
 set MIXER AERT
 
-param set UAVBOOK_PWM_RAD_A -1.57
+param set UAVBOOK_PWM_RAD_A 1.57
 param set UAVBOOK_PWM_RAD_E 1.57
 
 param set UAVBOOK_TRIM_A 0.058

@@ -57,6 +57,7 @@ protected:
         float accel_z;
         float static_pres;
         float diff_pres;
+        bool gps_new;
         float gps_n;
         float gps_e;
         float gps_h;

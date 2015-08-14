@@ -64,12 +64,17 @@ float estimator_base::spin()
 
         if(_gps_init && _gps_new)
         {
+            input.gps_new = true;
             float conversion = (3.14159/(180*1e7)); //from 1/10th of a micro degree to radian
             input.gps_n = EARTH_RADIUS * (float)(_gps.lat - _init_lat) * conversion;
             input.gps_e = EARTH_RADIUS * cosf((float)_init_lat * conversion) * (float)(_gps.lon - _init_lon) * conversion;
             input.gps_h = (_gps.alt - _init_alt) / 1e3f;
             input.gps_Vg = _gps.vel_m_s;
             input.gps_course = _gps.cog_rad;
+        }
+        else
+        {
+            input.gps_new = false;
         }
 
         if(_time_to_run == 1)//_gps_init) // don't estimate unless you have gps
@@ -156,7 +161,7 @@ void estimator_base::gps_poll()
         orb_copy(ORB_ID(vehicle_gps_position), _gps_sub, &_gps);
     }
 
-    if (_gps.fix_type < 3) {
+    if (_gps.fix_type < 3 || !isfinite(_gps.lon) || !isfinite(_gps.lat) || !isfinite(_gps.alt) ) {
         _gps_new = false;
     }
 
