@@ -216,7 +216,10 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
     // prediction step
     float psidot, tmp, Vgdot;
     if(fabsf(xhat_p(2)) < 0.01f)
+    {
         xhat_p(2) = 0.01;
+    }
+
     for(int i=0;i<N;i++)
     {
         psidot = (qhat*sinf(phihat) + rhat*cosf(phihat))/cosf(thetahat);

@@ -99,18 +99,14 @@ protected:
         float b_kp;
         float b_kd;
         float b_ki;
-        float max_e;
-        float max_a;
-        float max_r;
-        float max_t;
-    };
-
-    // extra params that don't go all the way to control(params, input, output)
-    struct params_extra_s {
         float trim_e;
         float trim_a;
         float trim_r;
         float trim_t;
+        float max_e;
+        float max_a;
+        float max_r;
+        float max_t;
         float pwm_rad_e;
         float pwm_rad_a;
         float pwm_rad_r;
@@ -172,7 +168,6 @@ private:
     struct manual_control_setpoint_s   _manual_control_sp; /**< manual control setpoint */
     struct actuator_controls_s         _actuators;         /**< actuator controls */
     struct params_s                    _params;            /**< params */
-    struct params_extra_s              _params_extra;      /**< params extra */
 
     /**
     * Update our local parameter cache.

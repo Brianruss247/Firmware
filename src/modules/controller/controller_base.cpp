@@ -110,14 +110,14 @@ float controller_base::spin()
 
 int controller_base::parameters_update()
 {
-    param_get(_params_handles.trim_e, &_params_extra.trim_e);
-    param_get(_params_handles.trim_a, &_params_extra.trim_a);
-    param_get(_params_handles.trim_r, &_params_extra.trim_r);
-    param_get(_params_handles.trim_t, &_params_extra.trim_t);
+    param_get(_params_handles.trim_e, &_params.trim_e);
+    param_get(_params_handles.trim_a, &_params.trim_a);
+    param_get(_params_handles.trim_r, &_params.trim_r);
+    param_get(_params_handles.trim_t, &_params.trim_t);
 
-    param_get(_params_handles.pwm_rad_e, &_params_extra.pwm_rad_e);
-    param_get(_params_handles.pwm_rad_a, &_params_extra.pwm_rad_a);
-    param_get(_params_handles.pwm_rad_r, &_params_extra.pwm_rad_r);
+    param_get(_params_handles.pwm_rad_e, &_params.pwm_rad_e);
+    param_get(_params_handles.pwm_rad_a, &_params.pwm_rad_a);
+    param_get(_params_handles.pwm_rad_r, &_params.pwm_rad_r);
 
     param_get(_params_handles.alt_toz, &_params.alt_toz);
     param_get(_params_handles.alt_hz, &_params.alt_hz);
@@ -212,9 +212,9 @@ void controller_base::manual_control_poll()
 
 void controller_base::convert_to_pwm(controller_base::output_s &output)
 {
-    output.delta_e = _params_extra.trim_e + output.delta_e*_params_extra.pwm_rad_e;
-    output.delta_a = _params_extra.trim_a + output.delta_a*_params_extra.pwm_rad_a;
-    output.delta_r = _params_extra.trim_r + output.delta_r*_params_extra.pwm_rad_r;
+    output.delta_e = output.delta_e*_params.pwm_rad_e;
+    output.delta_a = output.delta_a*_params.pwm_rad_a;
+    output.delta_r = output.delta_r*_params.pwm_rad_r;
 }
 
 void controller_base::pilot_override(controller_base::output_s &output)
