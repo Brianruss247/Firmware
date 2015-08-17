@@ -89,7 +89,7 @@ float controller_base::spin()
         input.q = _vehicle_state.q;
         input.r = _vehicle_state.r;
         input.Va_c = 9;//_controller_commands.Va_c;
-        input.h_c = 10;//_controller_commands.h_c;
+        input.h_c = 20;//_controller_commands.h_c;
         input.chi_c = 0;//_controller_commands.chi_c;
         hrt_abstime curr_time = hrt_absolute_time();
         input.Ts = (prev_time_ != 0) ? (curr_time - prev_time_) * 0.000001f : 0.0f;// 0.01f;
@@ -221,17 +221,17 @@ void controller_base::pilot_override(controller_base::output_s &output)
 {
     if (_manual_control_sp.y > MANUAL_THRESHOLD || _manual_control_sp.y < -MANUAL_THRESHOLD || _manual_control_sp.mode_switch == 3)
     {
-        output.delta_a = _manual_control_sp.y;
+        output.delta_a = _params.trim_a + _manual_control_sp.y;
     }
 
     if (_manual_control_sp.x > MANUAL_THRESHOLD || _manual_control_sp.x < -MANUAL_THRESHOLD || _manual_control_sp.mode_switch == 3)
     {
-        output.delta_e = -_manual_control_sp.x;
+        output.delta_e = _params.trim_e - _manual_control_sp.x;
     }
 
     if (_manual_control_sp.r > MANUAL_THRESHOLD || _manual_control_sp.r < -MANUAL_THRESHOLD || _manual_control_sp.mode_switch == 3)
     {
-        output.delta_r = _manual_control_sp.r;
+        output.delta_r = _params.trim_r + _manual_control_sp.r;
     }
 
     // take min of commanded throttle and stick throttle

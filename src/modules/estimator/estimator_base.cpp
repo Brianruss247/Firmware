@@ -77,17 +77,20 @@ float estimator_base::spin()
             input.gps_new = false;
         }
 
-        if(_time_to_run == 1)//_gps_init) // don't estimate unless you have gps
+        if(_time_to_run == 1)
         {
-            hrt_abstime curr_time = hrt_absolute_time();
-            input.Ts = (prev_time_ != 0) ? (curr_time - prev_time_) * 0.000001f : 0.0f;
-            prev_time_ = curr_time;
+            if(_gps_init) // don't estimate unless you have gps
+            {
+                hrt_abstime curr_time = hrt_absolute_time();
+                input.Ts = (prev_time_ != 0) ? (curr_time - prev_time_) * 0.000001f : 0.0f;
+                prev_time_ = curr_time;
 
-            struct output_s output;
+                struct output_s output;
 
-            estimate(_params, input, output);
+                estimate(_params, input, output);
 
-            vehicle_state_publish(output);
+                vehicle_state_publish(output);
+            }
             _time_to_run = -1;
         }
         _time_to_run++;
