@@ -17,7 +17,7 @@ void controller_example::control(const params_s &params, const input_s &input, o
 {
     output.delta_r = 0; //cooridinated_turn_hold(input.beta, params, input.Ts)
     output.phi_c = course_hold(input.chi_c, input.chi, input.r, params, input.Ts);
-    output.delta_a = roll_hold(30*M_PI_F/180, input.phi, input.p, params, input.Ts);
+    output.delta_a = roll_hold(-30*M_PI_F/180, input.phi, input.p, params, input.Ts);
 
     //printf("%d %d ", (int)(state), (int)(input.h));
 
@@ -84,7 +84,7 @@ void controller_example::control(const params_s &params, const input_s &input, o
         break;
     }
 
-    output.delta_e = pitch_hold(output.theta_c, input.theta, input.q, params, input.Ts);
+    output.delta_e = pitch_hold(30*M_PI_F/180, input.theta, input.q, params, input.Ts);
     //printf("%d\n", (int)(100*output.phi_c));
 }
 

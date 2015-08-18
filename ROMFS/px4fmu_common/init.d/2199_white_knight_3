@@ -7,11 +7,17 @@ set MIXER AERT
 param set UAVBOOK_PWM_RAD_A 1.57
 param set UAVBOOK_PWM_RAD_E 1.57
 
-param set UAVBOOK_TRIM_A 0.058
-param set UAVBOOK_TRIM_A 0.224
+param set UAVBOOK_TRIM_A 0.0
+param set UAVBOOK_TRIM_E 0.224
+param set UAVBOOK_TRIM_T 0.7
 
 param set UAVBOOK_AIRSPEED_THROTTLE_KI 0.01
-param set UAVBOOK_AIRSPEED_THROTTLE_KP 0.4
+param set UAVBOOK_AIRSPEED_THROTTLE_KP 0.5
+
+param set UAVBOOK_ROLL_KP 1.1
+param set UAVBOOK_ROLL_KI 0.09
+
+param set UAVBOOK_PITCH_KP 1.0
 
 mavlink stop-all
 mavlink start -d /dev/ttyS1 -m custom
