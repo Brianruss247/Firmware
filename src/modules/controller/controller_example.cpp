@@ -17,7 +17,7 @@ void controller_example::control(const params_s &params, const input_s &input, o
 {
     output.delta_r = 0; //cooridinated_turn_hold(input.beta, params, input.Ts)
     output.phi_c = course_hold(input.chi_c, input.chi, input.r, params, input.Ts);
-    output.delta_a = roll_hold(0, input.phi, input.p, params, input.Ts);
+    output.delta_a = roll_hold(output.phi_c, input.phi, input.p, params, input.Ts);
 
     //printf("%d %d ", (int)(state), (int)(input.h));
 

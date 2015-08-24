@@ -24,6 +24,9 @@ param set UAVBOOK_ROLL_KI 0.09
 param set UAVBOOK_PITCH_KP 1.0
 
 param set UAVBOOK_ALTITUDE_KP 0.0546
+param set UAVBOOK_ALTITUDE_KI 0.0
+
+param set UAVBOOK_COURSE_KP 0.4657
 
 mavlink stop-all
 mavlink start -d /dev/ttyS1 -m custom
