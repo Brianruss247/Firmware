@@ -68,6 +68,7 @@ static int daemon_task;				/**< Handle of daemon task / thread */
 
 //funtion prototypes
 int controller_thread_main(int argc, char *argv[]);
+controller_base* cont;
 static void usage(const char *reason);
 
 static void usage(const char *reason)
@@ -121,7 +122,8 @@ int controller_main(int argc, char *argv[])
 
     if (!strcmp(argv[1], "status")) {
         if (thread_running) {
-            warnx("running");
+            int state = cont->getstate();
+            warnx("running, alt_state = %d", state);
             exit(0);
 
         } else {
@@ -144,7 +146,7 @@ int controller_thread_main(int argc, char *argv[])
 
     thread_running = true;
 
-    controller_base* cont = new controller_example();
+    cont = new controller_example();
     while(!thread_should_exit)
     {
         cont->spin();

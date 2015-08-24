@@ -16,6 +16,7 @@ public:
     controller_example();
 private:
     virtual void control(const struct params_s &params, const struct input_s &input, struct output_s &output);
+    virtual int getstate();
     alt_state state;
 
     float course_hold(float chi_c, float chi, float r, const struct params_s &params, float Ts);

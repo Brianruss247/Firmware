@@ -79,7 +79,7 @@ float estimator_base::spin()
 
         if(_time_to_run == 1)
         {
-            if(_gps_init) // don't estimate unless you have gps
+            if(true)//_gps_init) // don't estimate unless you have gps
             {
                 hrt_abstime curr_time = hrt_absolute_time();
                 input.Ts = (prev_time_ != 0) ? (curr_time - prev_time_) * 0.000001f : 0.0f;

@@ -197,14 +197,24 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
     if(xhat_a(0) > (float)math::radians(85.0) || xhat_a(0) < (float)math::radians(-85.0) || !isfinite(xhat_a(0)))
     {
         warnx("problem 00");
-        xhat_a(0) = 0;
+        if(!isfinite(xhat_a(0)))
+            xhat_a(0) = 0;
+        else if(xhat_a(0) > (float)math::radians(85.0))
+            xhat_a(0) = (float)math::radians(80.0);
+        else if(xhat_a(0) < (float)math::radians(-85.0))
+            xhat_a(0) = (float)math::radians(-80.0);
         P_a.identity();
         P_a *= powf(math::radians(20.0f),2);
     }
     if(xhat_a(1) > (float)math::radians(80.0) || xhat_a(1) < (float)math::radians(-80.0) || !isfinite(xhat_a(1)))
     {
-        warnx("problem 01");
-        xhat_a(1) = 0;
+        warnx("problem 01");warnx("problem 00");
+        if(!isfinite(xhat_a(1)))
+            xhat_a(1) = 0;
+        else if(xhat_a(1) > (float)math::radians(80.0))
+            xhat_a(1) = (float)math::radians(75.0);
+        else if(xhat_a(1) < (float)math::radians(-80.0))
+            xhat_a(1) = (float)math::radians(-75.0);
         P_a.identity();
         P_a *= powf(math::radians(20.0f),2);
     }

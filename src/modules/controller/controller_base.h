@@ -46,6 +46,7 @@ class controller_base
 public:
     controller_base();
     float spin();
+    virtual int getstate() = 0;
 
 protected:
 
