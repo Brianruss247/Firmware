@@ -88,9 +88,9 @@ float controller_base::spin()
         input.p = _vehicle_state.p;
         input.q = _vehicle_state.q;
         input.r = _vehicle_state.r;
-        input.Va_c = 9.5;//_controller_commands.Va_c;
-        input.h_c = 25;//_controller_commands.h_c;
-        input.chi_c = 0;//_controller_commands.chi_c;
+        input.Va_c = _controller_commands.Va_c;
+        input.h_c = _controller_commands.h_c;
+        input.chi_c = _controller_commands.chi_c;
         hrt_abstime curr_time = hrt_absolute_time();
         input.Ts = (prev_time_ != 0) ? (curr_time - prev_time_) * 0.000001f : 0.0f;// 0.01f;
         prev_time_ = curr_time;

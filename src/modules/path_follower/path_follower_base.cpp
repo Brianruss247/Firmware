@@ -42,16 +42,19 @@ float path_follower_base::spin()
         current_path_poll();
 
         struct input_s input;
-        input.flag = _current_path.flag;
-        input.Va_d = _current_path.Va_d;
+        input.flag = false;//_current_path.flag;
+        input.Va_d = 9.5;//_current_path.Va_d;
         for(int i=0;i<3;i++)
         {
             input.r_path[i] = _current_path.r[i];
             input.q_path[i] = _current_path.q[i];
             input.c_orbit[i] = _current_path.c[i];
         }
-        input.rho_orbit = _current_path.rho;
-        input.lam_orbit = _current_path.lambda;
+        input.c_orbit[0] = -75;
+        input.c_orbit[1] = -75;
+        input.c_orbit[2] = 25;
+        input.rho_orbit = 25;//_current_path.rho;
+        input.lam_orbit = -1;//_current_path.lambda;
         input.pn = _vehicle_state.position[0];               /** position north */
         input.pe = _vehicle_state.position[1];               /** position east */
         input.h = _vehicle_state.position[2];                /** altitude */
