@@ -19,6 +19,8 @@ path_follower_base::path_follower_base()
     _params_handles.k_orbit        = param_find("UAVBOOK_K_ORBIT");
 
     parameters_update();
+
+    _controller_commands_pub = orb_advertise(ORB_ID(controller_commands), &_controller_commands);
 }
 
 float path_follower_base::spin()
@@ -50,9 +52,9 @@ float path_follower_base::spin()
             input.q_path[i] = _current_path.q[i];
             input.c_orbit[i] = _current_path.c[i];
         }
-        input.c_orbit[0] = -75;
-        input.c_orbit[1] = -75;
-        input.c_orbit[2] = 25;
+        input.c_orbit[0] = -75; // 75m south
+        input.c_orbit[1] = -75; // 75m west
+        input.c_orbit[2] = -25; // 25m up
         input.rho_orbit = 25;//_current_path.rho;
         input.lam_orbit = -1;//_current_path.lambda;
         input.pn = _vehicle_state.position[0];               /** position north */
@@ -123,8 +125,8 @@ void path_follower_base::current_path_poll()
 void path_follower_base::controller_commands_publish(output_s &output)
 {
     /* publish actuator controls */
-    _controller_commands.Va_c = (isfinite(output.Va_c) ? output.Va_c : 0.0f);
-    _controller_commands.h_c = (isfinite(output.h_c) ? output.h_c : 0.0f);
+    _controller_commands.Va_c = (isfinite(output.Va_c) ? output.Va_c : 9.5f);
+    _controller_commands.h_c = (isfinite(output.h_c) ? output.h_c : 25.0f);
     _controller_commands.chi_c = (isfinite(output.chi_c) ? output.chi_c : 0.0f);
 
     _controller_commands.timestamp = hrt_absolute_time();

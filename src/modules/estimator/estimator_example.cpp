@@ -1,6 +1,6 @@
 #include "estimator_example.h"
 
-estimator_example::estimator_example()
+estimator_example::estimator_example() : estimator_base()
 {
     alpha = 0;
     alpha1 = 0;
@@ -109,9 +109,9 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
 //    }
 
     // low pass filter accelerometers
-//    lpf_accel_x = alpha*lpf_accel_x + (1-alpha)*input.accel_x;
-//    lpf_accel_y = alpha*lpf_accel_y + (1-alpha)*input.accel_y;
-//    lpf_accel_z = alpha*lpf_accel_z + (1-alpha)*input.accel_z;
+    lpf_accel_x = alpha*lpf_accel_x + (1-alpha)*input.accel_x;
+    lpf_accel_y = alpha*lpf_accel_y + (1-alpha)*input.accel_y;
+    lpf_accel_z = alpha*lpf_accel_z + (1-alpha)*input.accel_z;
 
     // inplement continuous-discrete EKF to estimate roll and pitch angles
 
@@ -164,7 +164,7 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
     math::Vector<2> K_a;
     K_a(0) = L_a(0,0);
     K_a(1) = L_a(1,0);
-    xhat_a += K_a *(input.accel_x - h_a);
+    xhat_a += K_a *(lpf_accel_x - h_a);//input.accel_x - h_a);
 
     // y-axis accelerometer
     h_a = rhat*Vahat*ct - phat*Vahat*st - params.gravity*ct*sp;
@@ -178,7 +178,7 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
     P_a = (I - L_a*C_a)*P_a;
     K_a(0) = L_a(0,0);
     K_a(1) = L_a(1,0);
-    xhat_a += K_a *(input.accel_y - h_a);
+    xhat_a += K_a *(lpf_accel_y - h_a);//input.accel_y - h_a);
 
     // z-axis accelerometer
     h_a = -qhat*Vahat*ct - params.gravity*ct*cp;
@@ -192,7 +192,7 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
     P_a = (I - L_a*C_a)*P_a;
     K_a(0) = L_a(0,0);
     K_a(1) = L_a(1,0);
-    xhat_a += K_a *(input.accel_z - h_a);
+    xhat_a += K_a *(lpf_accel_z - h_a);//input.accel_z - h_a);
 
     if(xhat_a(0) > (float)math::radians(85.0) || xhat_a(0) < (float)math::radians(-85.0) || !isfinite(xhat_a(0)))
     {
@@ -205,12 +205,12 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
         }
         else if(xhat_a(0) > (float)math::radians(85.0))
         {
-            xhat_a(0) = (float)math::radians(80.0);
+            xhat_a(0) = (float)math::radians(82.0);
             warnx("problem 00.1");
         }
         else if(xhat_a(0) < (float)math::radians(-85.0))
         {
-            xhat_a(0) = (float)math::radians(-80.0);
+            xhat_a(0) = (float)math::radians(-82.0);
             warnx("problem 00.2");
         }
     }
@@ -224,9 +224,13 @@ void estimator_example::estimate(const params_s &params, const input_s &input, o
             P_a *= powf(math::radians(20.0f),2);
         }
         else if(xhat_a(1) > (float)math::radians(80.0))
-            xhat_a(1) = (float)math::radians(75.0);
+        {
+            xhat_a(1) = (float)math::radians(77.0);
+        }
         else if(xhat_a(1) < (float)math::radians(-80.0))
-            xhat_a(1) = (float)math::radians(-75.0);
+        {
+            xhat_a(1) = (float)math::radians(-77.0);
+        }
     }
     float phihat = xhat_a(0);
     float thetahat = xhat_a(1);

@@ -29,6 +29,7 @@ estimator_base::estimator_base()
 
     parameters_update();
 
+    _vehicle_state_pub = orb_advertise(ORB_ID(vehicle_state), &_vehicle_state);
 }
 
 float estimator_base::spin()

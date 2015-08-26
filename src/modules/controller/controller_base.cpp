@@ -56,6 +56,8 @@ controller_base::controller_base()
     parameters_update();
 
     prev_time_ = hrt_absolute_time();
+
+    _actuators_0_pub = orb_advertise(ORB_ID(actuator_controls_0), &_actuators);
 }
 
 float controller_base::spin()

@@ -24,6 +24,8 @@ path_manager_base::path_manager_base()
     _params_handles.R_min      = param_find("UAVBOOK_R_MIN");
 
     parameters_update();
+
+    _current_path_pub = orb_advertise(ORB_ID(current_path), &_current_path);
 }
 
 float path_manager_base::spin()

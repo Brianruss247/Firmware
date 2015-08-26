@@ -1,6 +1,6 @@
 #include "controller_example.h"
 
-controller_example::controller_example()
+controller_example::controller_example() : controller_base()
 {
     state = alt_state::TakeOffZone;
 

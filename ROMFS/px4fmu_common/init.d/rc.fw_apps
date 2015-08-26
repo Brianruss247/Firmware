@@ -14,6 +14,8 @@ estimator start
 #
 #fw_att_control start
 #fw_pos_control_l1 start
+path_manager start
+path_follower start
 controller start
 
 #
@@ -24,5 +26,4 @@ controller start
 #
 # Misc apps
 #
-path_follower start
-path_manager start
+
