@@ -28,6 +28,8 @@ param set UAVBOOK_ALTITUDE_KI 0.0
 
 param set UAVBOOK_COURSE_KP 0.4657
 
+param set UAVBOOK_R_MIN 15
+
 mavlink stop-all
 mavlink start -d /dev/ttyS1 -m custom
 mavlink stream -d /dev/ttyS1 -s HIL_VEHICLE_STATE -r 75

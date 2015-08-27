@@ -1484,7 +1484,7 @@ int sdlog2_thread_main(int argc, char *argv[])
 
         /* --- VEHICLE STATE --- */
         if (copy_if_updated(ORB_ID(vehicle_state), &subs.state_sub, &buf.state)) {
-            log_msg.msg_type = LOG_STAT_MSG;
+            log_msg.msg_type = LOG_XHAT_MSG;
             log_msg.body.log_XHAT.pos_n = buf.state.position[0];
             log_msg.body.log_XHAT.pos_e = buf.state.position[1];
             log_msg.body.log_XHAT.pos_h = buf.state.position[2];

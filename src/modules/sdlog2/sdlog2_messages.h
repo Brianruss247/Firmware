@@ -59,18 +59,18 @@ struct log_XHAT_s {
     float beta;
     float phi;
     float theta;
-    float psi;
+//    float psi;
     float chi;
     float p;
     float q;
     float r;
     float v_g;
-    float wn;
-    float we;
-    float quat_w;
-    float quat_x;
-    float quat_y;
-    float quat_z;
+//    float wn;
+//    float we;
+//    float quat_w;
+//    float quat_x;
+//    float quat_y;
+//    float quat_z;
 };
 
 /* --- ATT - ATTITUDE --- */
@@ -515,7 +515,7 @@ struct log_PARM_s {
 /* construct list of all message formats */
 static const struct log_format_s log_formats[] = {
 	/* business-level messages, ID < 0x80 */
-    LOG_FORMAT(XHAT, "fffffffffffff",	"pos_n,pos_e,pos_h,Va,alpha,beta,phi,theta,chi,p,q,r,Vg"),
+    LOG_FORMAT(XHAT, "fffffffffffff",	"posN,posE,posH,Va,alpha,beta,phi,theta,chi,p,q,r,Vg"),
 	LOG_FORMAT(ATT, "fffffffffffff",	"qw,qx,qy,qz,Roll,Pitch,Yaw,RollRate,PitchRate,YawRate,GX,GY,GZ"),
 	LOG_FORMAT(ATSP, "ffffffff",		"RollSP,PitchSP,YawSP,ThrustSP,qw,qx,qy,qz"),
 	LOG_FORMAT_S(IMU, IMU, "ffffffffffff",		"AccX,AccY,AccZ,GyroX,GyroY,GyroZ,MagX,MagY,MagZ,tA,tG,tM"),
