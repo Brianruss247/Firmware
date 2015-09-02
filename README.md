@@ -1,43 +1,21 @@
 ## PX4 Flight Core and PX4 Middleware ##
 
-[![Build Status](https://travis-ci.org/PX4/Firmware.svg?branch=master)](https://travis-ci.org/PX4/Firmware) [![Coverity Scan](https://scan.coverity.com/projects/3966/badge.svg?flat=1)](https://scan.coverity.com/projects/3966?tab=overview)
+This repository contains the PX4 Flight Core, with the main applications located in the src/modules directory. It has been modified from the original repo to run the autopilot base on [this book](http://uavbook.byu.edu/doku.php).  It is developed to be used as an understanding and development tool for students and researchers that have taken the Flight Dynamics class offered at Brigham Young University and could be addapted for use by others familar with the textbook. 
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/PX4/Firmware?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+### Simulation ### 
 
-This repository contains the PX4 Flight Core, with the main applications located in the src/modules directory. It also contains the PX4 Drone Platform, which contains drivers and middleware to run drones. 
+A full MatLab simulation of an autopilot is used in the class and can be found in the [Matlab_simulator](https://github.com/MAGICC-UAVbook/Matlab_simulator) repository. This simulation can be used for Software and Harware in the loop (SIL\HIL) using the [SIL](https://github.com/MAGICC-UAVbook/SIL) and [MATLink](https://github.com/MAGICC-UAVbook/MATLink) repositories respectively.
 
-*   Official Website: http://px4.io
-*   License: BSD 3-clause (see LICENSE.md)
-*   Supported airframes (more experimental are supported):
-  * [Multicopters](http://px4.io/platforms/multicopters/start)
-  * [Fixed wing](http://px4.io/platforms/planes/start)
-  * [VTOL](http://px4.io/platforms/vtol/start)
-*   Binaries (always up-to-date from master):
-  * [Downloads](http://px4.io/firmware/downloads)
-*   Mailing list: [Google Groups](http://groups.google.com/group/px4users)
+### Setup ### 
 
-### Users ###
+See the wiki page for information on building and flashing the code.  There are a couple of models that can be used for flying this autopilot.  These can be used by setting the autostart to 2198 or 2199 ($ param set SYS_AUTOSTART 2198). 2198 is ment for HIL and 2199 is for flying the [White Knight III](http://www.et.byu.edu/~gellings/white_knight_3.html).  Most of the setup can be done from the [nutshell](https://pixhawk.org/dev/wiring) (calibration is done from the commander) can alternatively be done from QGroundControl.
 
-Please refer to the [user documentation](https://pixhawk.org/users/start) for flying drones with the PX4 flight stack.
+### Apps ###
 
-### Developers ###
+At this point the textbook autopilot uses four apps: controller, estimator, path_follower, and path_manager.  These apps are the code from chapters 6, 8, 10, and 11 respectively.  Each app is structure such that a student rewrite the autopilot would only have to rewrite the ###_example class.  The ###_base class is a vertual class that handles that comunication and sets up a vertual function for the ###_example class to inherit and implement.
 
-Contributing guide:
-  * [CONTRIBUTING.md](https://github.com/PX4/Firmware/blob/master/CONTRIBUTING.md)
-  * [PX4 Contribution Guide](http://px4.io/dev/contributing)
+### Testing ###
 
-Developer guide:
-http://px4.io/dev/
+This autopilot code was tested in simulation as well as in flight.  It was never working particularly well but it worked.  It was flown on a [White Knight III](http://www.et.byu.edu/~gellings/white_knight_3.html).  Here is a [video](https://www.youtube.com/watch?v=ClOzU5v_bPo).  Here is the [presentation](http://www.et.byu.edu/~gellings/white_knight_3/presentation.pdf). 
 
-Testing guide:
-http://px4.io/dev/unit_tests
 
-This repository contains code supporting these boards:
-  * FMUv1.x
-  * FMUv2.x
-  * AeroCore (v1 and v2)
-
-## NuttShell (NSH) ##
-
-NSH usage documentation:
-http://px4.io/users/serial_connection
